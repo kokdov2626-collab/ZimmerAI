@@ -1,8 +1,9 @@
 exports.handler = async (event) => {
   const { ref } = event.queryStringParameters;
-  const GKEY = 'AIzaSyBEN934pP4ajrsTJnB1LcFQ26Fo6w1Ke-M';
+  const GKEY = process.env.GOOGLE_API_KEY;
+
   const url = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${ref}&key=${GKEY}`;
-  
+
   try {
     const res = await fetch(url);
     const buffer = await res.arrayBuffer();
