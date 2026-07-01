@@ -1,7 +1,11 @@
 exports.handler = async (event) => {
   const params = event.queryStringParameters;
-  const GKEY = 'AIzaSyBEN934pP4ajrsTJnB1LcFQ26Fo6w1Ke-M';
-  
+  const GKEY = process.env.GOOGLE_API_KEY;
+
+  if (!GKEY) {
+    return { statusCode: 500, body: JSON.stringify({ error: 'Missing API key' }) };
+  }
+
   let url;
   if (params.pagetoken) {
     url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken=${params.pagetoken}&key=${GKEY}`;
@@ -31,4 +35,3 @@ exports.handler = async (event) => {
     };
   }
 };
-// Note: photo endpoint handled separately
