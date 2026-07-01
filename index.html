@@ -407,7 +407,6 @@ function pickRegions(ctx) {
   return REGIONS; // כל ישראל
 }
 
-// שליפת דף אחד — דרך Netlify Function (פותר CORS)
 async function fetchPage(location, radius, keyword, pagetoken) {
   let url;
   if (pagetoken) {
@@ -421,8 +420,6 @@ async function fetchPage(location, radius, keyword, pagetoken) {
   return d;
 }
 
-// שליפה עם pagination — עד 3 דפים
-// רדיוס 10 ק"מ לעיר ספציפית, 25 ק"מ לאזור
 async function fetchWithPagination(reg, kw) {
   const results = [];
   const radius = reg.specific ? 10000 : 25000;
@@ -596,8 +593,11 @@ const FBQ = [
 ];
 
 async function callClaude(sys, msgs, tok=400) {
-  const r = await fetch(CLAUDE,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:tok,system:sys,messages:msgs})});
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:tok,system:sys,messages:msgs})
+  });
   const d = await r.json();
   return d.content?.[0]?.text||'';
 }
