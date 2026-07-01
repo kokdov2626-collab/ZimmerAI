@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZimmerAI — כל הצימרים בישראל</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0f1e;--bg2:#111827;--bg3:#1a2234;--card:#151d2e;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --gold:#c9a84c;--gold2:#e8c97a;--gold-glow:rgba(201,168,76,0.18);
+  --text:#f0ebe0;--text2:#9aa0b0;--text3:#6b7280;--radius:14px;--radius-sm:8px;
+}
+body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl;}
+
+header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,15,30,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-size:22px;font-weight:700;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.logo span{-webkit-text-fill-color:var(--text);font-weight:300;}
+nav{display:flex;gap:8px;}
+.nav-btn{background:none;border:1px solid var(--border2);color:var(--text2);padding:6px 14px;border-radius:20px;font-family:inherit;font-size:13px;cursor:pointer;transition:all .2s;}
+.nav-btn:hover{border-color:var(--gold);color:var(--gold);}
+.nav-btn.primary{background:var(--gold);color:#0a0f1e;border-color:var(--gold);font-weight:600;}
+
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 1.5rem 3rem;position:relative;overflow:visible;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(79,142,247,0.08),transparent 70%),radial-gradient(ellipse 40% 40% at 80% 60%,rgba(201,168,76,0.06),transparent 60%);pointer-events:none;z-index:0;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%);pointer-events:none;z-index:0;}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:var(--gold);padding:5px 16px;border-radius:20px;font-size:13px;font-weight:500;margin-bottom:1.5rem;position:relative;z-index:2;}
+.badge::before{content:'';width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+h1{font-size:clamp(2rem,5.5vw,3.6rem);font-weight:900;line-height:1.15;text-align:center;margin-bottom:1rem;letter-spacing:-1px;position:relative;z-index:2;}
+h1 .hl{background:linear-gradient(135deg,var(--gold),var(--gold2),#7db3ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-size:clamp(.9rem,2vw,1.1rem);color:var(--text2);text-align:center;max-width:520px;line-height:1.7;margin-bottom:2.5rem;font-weight:300;position:relative;z-index:2;}
+
+.search-container{width:100%;max-width:720px;position:relative;z-index:10;}
+.sbi{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:1.25rem;display:flex;gap:10px;align-items:flex-end;position:relative;z-index:10;}
+.iw{flex:1;position:relative;z-index:10;}
+.iw label{display:block;font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;}
+.mta{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:12px 16px;color:var(--text);font-family:'Heebo',sans-serif;font-size:15px;resize:vertical;line-height:1.6;direction:rtl;transition:border-color .2s;display:block;box-sizing:border-box;-webkit-appearance:none;appearance:none;outline:none;min-height:52px;position:relative;z-index:10;}
+.mta:focus{border-color:var(--gold);}
+.mta::placeholder{color:var(--text3);}
+.go-btn{background:linear-gradient(135deg,var(--gold),#b8922e);border:none;border-radius:var(--radius-sm);color:#0a0f1e;font-family:inherit;font-size:14px;font-weight:700;padding:0 1.4rem;height:58px;cursor:pointer;transition:all .2s;white-space:nowrap;min-width:110px;display:flex;align-items:center;justify-content:center;gap:6px;position:relative;z-index:10;}
+.go-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(201,168,76,.3);}
+.go-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+
+#phase-chat{display:none;}
+.cwin{background:var(--card);border:1px solid var(--border2);border-radius:16px 16px 0 0;padding:1.25rem;max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;}
+.cwin::-webkit-scrollbar{width:4px;}
+.cwin::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.mai{display:flex;gap:10px;align-items:flex-start;animation:fu .3s ease;}
+.aav{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#b8922e);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;color:#0a0f1e;font-weight:700;}
+.abub{background:var(--bg3);border:1px solid var(--border);border-radius:4px 14px 14px 14px;padding:10px 14px;font-size:14px;line-height:1.7;color:var(--text);max-width:85%;}
+.qrs{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.qr{background:var(--bg2);border:1px solid var(--border2);color:var(--gold);padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer;font-family:inherit;transition:all .2s;}
+.qr:hover{background:var(--gold-glow);border-color:var(--gold);}
+
+/* תפריט תאריכים */
+.date-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px;direction:rtl;}
+.date-btn{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:8px 10px;cursor:pointer;font-family:inherit;text-align:right;display:flex;align-items:center;gap:7px;transition:all .2s;color:var(--text2);}
+.date-btn:hover{border-color:var(--gold);background:var(--gold-glow);color:var(--text);}
+.date-icon{font-size:16px;flex-shrink:0;}
+.date-label{font-size:12px;font-weight:500;line-height:1.3;}
+@media(max-width:400px){.date-grid{grid-template-columns:1fr;}}
+.muser{display:flex;animation:fu .3s ease;}
+.ubub{background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.08));border:1px solid rgba(201,168,76,.25);border-radius:14px 4px 14px 14px;padding:10px 14px;font-size:14px;line-height:1.6;color:var(--text);max-width:75%;}
+.typing{display:flex;gap:10px;align-items:flex-start;}
+.tdots{background:var(--bg3);border:1px solid var(--border);border-radius:4px 14px 14px 14px;padding:12px 16px;display:flex;gap:4px;align-items:center;}
+.tdots span{width:6px;height:6px;background:var(--text3);border-radius:50%;animation:tb 1.2s infinite;}
+.tdots span:nth-child(2){animation-delay:.15s;}
+.tdots span:nth-child(3){animation-delay:.3s;}
+@keyframes tb{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
+.scard{background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(79,142,247,.06));border:1px solid rgba(201,168,76,.3);border-radius:10px;padding:10px 14px;margin-top:8px;font-size:12px;color:var(--text2);line-height:1.8;}
+.scard strong{color:var(--gold);}
+.cir{display:flex;gap:8px;background:var(--card);border:1px solid var(--border2);border-top:none;padding:10px 12px;}
+.cta2{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'Heebo',sans-serif;font-size:14px;padding:10px 14px;resize:vertical;direction:rtl;line-height:1.5;transition:border-color .2s;display:block;box-sizing:border-box;-webkit-appearance:none;appearance:none;outline:none;min-height:42px;max-height:100px;}
+.cta2:focus{border-color:var(--gold);}
+.cta2::placeholder{color:var(--text3);}
+.sbtn{background:var(--gold);border:none;border-radius:var(--radius-sm);color:#0a0f1e;font-family:inherit;font-size:13px;font-weight:700;padding:0 16px;cursor:pointer;white-space:nowrap;transition:all .2s;}
+.sbtn:hover{background:var(--gold2);}
+.sbtn:disabled{opacity:.5;cursor:not-allowed;}
+.cacts{display:none;gap:10px;background:var(--card);border:1px solid var(--border2);border-top:none;border-radius:0 0 16px 16px;padding:12px;}
+.ago{flex:1;background:linear-gradient(135deg,var(--gold),#b8922e);border:none;border-radius:var(--radius-sm);color:#0a0f1e;font-family:inherit;font-size:15px;font-weight:700;padding:12px;cursor:pointer;transition:all .2s;}
+.ago:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,76,.3);}
+.areset{background:none;border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text3);font-family:inherit;font-size:13px;padding:12px 16px;cursor:pointer;transition:all .2s;}
+.areset:hover{border-color:var(--text2);color:var(--text2);}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.sug{display:flex;flex-wrap:wrap;gap:8px;margin-top:1rem;justify-content:center;position:relative;z-index:2;}
+.sc{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer;transition:all .2s;font-family:inherit;}
+.sc:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-glow);}
+
+.stats{display:flex;gap:1.5rem;justify-content:center;margin-top:2.5rem;flex-wrap:wrap;position:relative;z-index:2;}
+.stat{text-align:center;padding:0 1rem;border-right:1px solid var(--border);}
+.stat:last-child{border-right:none;}
+.snum{font-size:1.6rem;font-weight:700;color:var(--gold);}
+.slbl{font-size:11px;color:var(--text3);margin-top:2px;}
+
+.loading{display:none;padding:2.5rem 1.5rem;max-width:650px;margin:0 auto;}
+.loading.on{display:block;}
+.ldots{display:flex;justify-content:center;gap:6px;margin-bottom:1.5rem;}
+.ldots span{width:8px;height:8px;background:var(--gold);border-radius:50%;animation:bo 1.2s infinite;}
+.ldots span:nth-child(2){animation-delay:.15s;}
+.ldots span:nth-child(3){animation-delay:.3s;}
+@keyframes bo{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-10px)}}
+.ltxt{text-align:center;color:var(--text2);font-size:15px;margin-bottom:1.5rem;font-weight:500;}
+.prog-wrap{background:var(--bg3);border-radius:20px;height:8px;overflow:hidden;margin-bottom:.5rem;}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:20px;transition:width .3s ease;width:0%;}
+.prog-info{display:flex;justify-content:space-between;font-size:12px;color:var(--text3);margin-bottom:1.5rem;}
+.live-count{font-size:2rem;font-weight:700;color:var(--gold);text-align:center;margin-bottom:.5rem;}
+.live-lbl{text-align:center;font-size:12px;color:var(--text3);margin-bottom:1.5rem;}
+.rtags{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;}
+.rtag{font-size:11px;padding:3px 10px;border-radius:20px;background:var(--bg3);border:1px solid var(--border);color:var(--text3);transition:all .3s;}
+.rtag.active{border-color:var(--gold);color:var(--gold);background:var(--gold-glow);animation:pulse 1s infinite;}
+.rtag.done{border-color:rgba(201,168,76,.4);color:var(--gold);background:rgba(201,168,76,.08);}
+
+.rsec{max-width:1200px;margin:0 auto;padding:2rem 1.5rem 5rem;display:none;}
+.rsec.on{display:block;}
+.aibox{background:linear-gradient(135deg,rgba(79,142,247,.08),rgba(201,168,76,.05));border:1px solid rgba(79,142,247,.2);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.5rem;font-size:14px;line-height:1.8;color:var(--text2);position:relative;}
+.aibox::before{content:'✦ AI';position:absolute;top:-10px;right:16px;background:var(--bg);color:#7db3ff;font-size:11px;font-weight:700;padding:0 8px;letter-spacing:1px;}
+.rhdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;gap:1rem;flex-wrap:wrap;}
+.rcnt strong{color:var(--gold);font-size:1.1rem;}
+.rcnt .rsrc{font-size:11px;color:var(--text3);margin-top:3px;}
+.ssel{background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:6px 12px;border-radius:var(--radius-sm);font-family:inherit;font-size:13px;cursor:pointer;}
+.fbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;}
+.fbtn{background:var(--bg3);border:1px solid var(--border);color:var(--text3);padding:5px 12px;border-radius:20px;font-family:inherit;font-size:12px;cursor:pointer;transition:all .2s;}
+.fbtn:hover,.fbtn.on{border-color:var(--gold);color:var(--gold);background:var(--gold-glow);}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:1.2rem;}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:all .25s;position:relative;}
+.card:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.3);}
+.card.top{border-color:rgba(201,168,76,.35);}
+.card.top::before{content:'⭐ מומלץ AI';position:absolute;top:10px;right:10px;z-index:2;background:rgba(201,168,76,.92);color:#0a0f1e;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.cimg{width:100%;height:170px;object-fit:cover;display:block;}
+.cph{width:100%;height:170px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;background:linear-gradient(135deg,var(--bg3),var(--bg2));}
+.cbody{padding:.9rem;}
+.cloc{font-size:11px;color:var(--gold);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+.ctitle{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.3;}
+.cdesc{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.mrow{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text3);margin:6px 0;}
+.mtrack{flex:1;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.mfill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;transition:width 1s ease;width:0%;}
+.mpct{min-width:32px;color:var(--gold);font-weight:600;}
+.cwhy{font-size:11px;color:var(--text3);font-style:italic;margin-bottom:6px;}
+.amens{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;}
+.am{font-size:11px;background:var(--bg3);color:var(--text3);padding:2px 7px;border-radius:4px;border:1px solid var(--border);}
+.cfoot{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:8px;}
+.crat{font-size:13px;color:var(--text2);}
+.stars{color:var(--gold);}
+.ccta{width:100%;margin-top:8px;padding:9px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);border-radius:var(--radius-sm);color:var(--gold);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
+.ccta:hover{background:rgba(201,168,76,.2);}
+.lmore{text-align:center;margin-top:2rem;display:none;}
+
+.free-banner{background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(79,142,247,.08));border:1px solid rgba(201,168,76,.25);border-radius:var(--radius);padding:1.5rem 2rem;text-align:center;margin:3rem auto;max-width:700px;}
+.free-banner h3{font-size:1.25rem;font-weight:700;color:var(--gold);margin-bottom:.5rem;}
+.free-banner p{font-size:14px;color:var(--text2);line-height:1.7;}
+.fbtn2{display:inline-block;margin-top:1rem;background:var(--gold);color:#0a0f1e;padding:10px 28px;border-radius:20px;font-weight:700;font-size:14px;border:none;cursor:pointer;font-family:inherit;transition:all .2s;}
+.fbtn2:hover{background:var(--gold2);}
+
+@media(max-width:640px){
+  .sbi{flex-direction:column;}
+  .go-btn{width:100%;}
+  .grid{grid-template-columns:1fr;}
+  .abub,.ubub{max-width:95%;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Zimmer<span>AI</span></div>
+  <nav>
+    <button class="nav-btn" onclick="document.getElementById('free-banner').scrollIntoView({behavior:'smooth'})">למארחים</button>
+    <button class="nav-btn primary">רשום נכס חינם</button>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-bg"></div><div class="hero-grid"></div>
+  <div class="badge">3,000–6,000 נכסים — כל ישראל</div>
+  <h1>כל הצימרים בישראל<br><span class="hl">במקום אחד</span></h1>
+  <p class="hero-sub">ה-AI שואל כמה שאלות, מחפש בכל 28 אזורי ישראל במקביל עם pagination מלא — ומביא לך אלפי נכסים ממוינים לפי ההתאמה שלך</p>
+
+  <div class="search-container">
+    <div id="phase-start">
+      <div class="sbi">
+        <div class="iw">
+          <label>ספר לי מה אתה מחפש</label>
+          <textarea class="mta" id="iinput" rows="2"
+            placeholder="לדוגמה: קמפוס 5 חדרים בגליל, צימר רומנטי עם בריכה, וילה לאירוע..."
+            autocomplete="off" spellcheck="true"></textarea>
+        </div>
+        <button class="go-btn" onclick="startChat()">התחל ←</button>
+      </div>
+    </div>
+
+    <div id="phase-chat">
+      <div class="cwin" id="cwin"></div>
+      <div class="cir" id="cir">
+        <textarea class="cta2" id="cta2" rows="1" placeholder="הקלד תשובה..."
+          autocomplete="off" spellcheck="true"></textarea>
+        <button class="sbtn" id="sbtn" onclick="sendMsg()">שלח ↵</button>
+      </div>
+      <div class="cacts" id="cacts">
+        <button class="ago" onclick="runSearch()">✦ חפש בכל ישראל</button>
+        <button class="areset" onclick="resetAll()">התחל מחדש</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sug" id="sugwrap">
+    <button class="sc" onclick="fas(this.textContent)">קמפוס 5 חדרי הורים נפרדים 🏘️</button>
+    <button class="sc" onclick="fas(this.textContent)">צימר רומנטי עם בריכה בצפון 🌊</button>
+    <button class="sc" onclick="fas(this.textContent)">וילה משפחתית בגליל 🌿</button>
+    <button class="sc" onclick="fas(this.textContent)">דירת נופש ים המלח 🧂</button>
+    <button class="sc" onclick="fas(this.textContent)">צימר כשר עם ג׳קוזי ✡️</button>
+    <button class="sc" onclick="fas(this.textContent)">וילה לאירוע עם בריכה 🎉</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="snum" id="stcount">6,000+</div><div class="slbl">נכסים בכל ישראל</div></div>
+    <div class="stat"><div class="snum">28</div><div class="slbl">אזורי חיפוש</div></div>
+    <div class="stat"><div class="snum">3 דפים</div><div class="slbl">לכל אזור</div></div>
+    <div class="stat"><div class="snum">AI</div><div class="slbl">התאמה חכמה</div></div>
+  </div>
+</section>
+
+<div class="loading" id="loading">
+  <div class="ldots"><span></span><span></span><span></span></div>
+  <div class="ltxt" id="ltxt">מחפש בכל ישראל...</div>
+  <div class="live-count" id="lcount">0</div>
+  <div class="live-lbl">נכסים נמצאו עד כה</div>
+  <div class="prog-wrap"><div class="prog-bar" id="pbar"></div></div>
+  <div class="prog-info">
+    <span id="pinfo">מתחיל חיפוש...</span>
+    <span id="ppct">0%</span>
+  </div>
+  <div class="rtags" id="rtags"></div>
+</div>
+
+<div class="rsec" id="rsec">
+  <div class="aibox" id="aibox"></div>
+  <div class="rhdr">
+    <div>
+      <div class="rcnt" id="rcnt"></div>
+      <div class="rsrc" id="rsrc"></div>
+    </div>
+    <select class="ssel" onchange="sortBy(this.value)">
+      <option value="match">לפי התאמה</option>
+      <option value="rating">לפי דירוג</option>
+      <option value="reviews">הכי מדורגים</option>
+      <option value="alpha">א-ב</option>
+    </select>
+  </div>
+  <div class="fbar" id="fbar"></div>
+  <div class="grid" id="grid"></div>
+  <div class="lmore" id="lmore">
+    <button class="go-btn" style="margin:0 auto;" onclick="loadMore()">טען עוד ↓</button>
+  </div>
+</div>
+
+<div class="free-banner" id="free-banner">
+  <h3>🎁 שנה ראשונה חינם — למארחים חדשים</h3>
+  <p>בעל צימר, וילה, דירת נופש או קמפוס? הצטרף.<br>
+  <strong style="color:var(--gold)">ללא עמלות. ללא חוזים. ללא תשלום בשנה הראשונה.</strong></p>
+  <button class="fbtn2" onclick="alert('הרשמה למארחים — בקרוב!')">רשום את הנכס שלי עכשיו ←</button>
+</div>
+
+<script>
+// ═══════════════════════════════
+// CONFIG
+// ═══════════════════════════════
+const CLAUDE  = 'https://api.anthropic.com/v1/messages';
+const GKEY    = 'AIzaSyBEN934pP4ajrsTJnB1LcFQ26Fo6w1Ke-M';
+const GPLACES = 'https://maps.googleapis.com/maps/api/place';
+const PAGE_SZ = 24;
+
+// ═══════════════════════════════
+// 28 אזורים — כל ישראל
+// ═══════════════════════════════
+const REGIONS = [
+  {n:'גליל עליון',     lat:33.00,lng:35.50,zone:'צפון'},
+  {n:'ראש פינה וצפת', lat:32.97,lng:35.50,zone:'צפון'},
+  {n:'כנרת וטבריה',   lat:32.80,lng:35.57,zone:'צפון'},
+  {n:'גולן צפוני',    lat:33.15,lng:35.78,zone:'צפון'},
+  {n:'גולן דרומי',    lat:32.90,lng:35.75,zone:'צפון'},
+  {n:'גליל מערבי',    lat:32.97,lng:35.08,zone:'צפון'},
+  {n:'גליל תחתון',    lat:32.72,lng:35.33,zone:'צפון'},
+  {n:'עכו ונהריה',    lat:32.92,lng:35.08,zone:'צפון'},
+  {n:'כרמל וחיפה',   lat:32.82,lng:35.00,zone:'מרכז-צפון'},
+  {n:'זכרון יעקב',   lat:32.57,lng:34.95,zone:'מרכז-צפון'},
+  {n:'קיסריה',        lat:32.50,lng:34.90,zone:'מרכז-צפון'},
+  {n:'עמק יזרעאל',   lat:32.60,lng:35.20,zone:'מרכז-צפון'},
+  {n:'נצרת ועמקים',  lat:32.70,lng:35.30,zone:'מרכז-צפון'},
+  {n:'שומרון',        lat:32.18,lng:35.18,zone:'מרכז'},
+  {n:'נתניה וחדרה',  lat:32.33,lng:34.86,zone:'מרכז'},
+  {n:'תל אביב ויפו', lat:32.07,lng:34.78,zone:'מרכז'},
+  {n:'שרון והרצליה', lat:32.17,lng:34.84,zone:'מרכז'},
+  {n:'שפלה ורמלה',   lat:31.93,lng:34.86,zone:'מרכז'},
+  {n:'ירושלים',       lat:31.77,lng:35.22,zone:'מרכז'},
+  {n:'מודיעין',       lat:31.90,lng:35.01,zone:'מרכז'},
+  {n:'יהודה ושומרון',lat:31.85,lng:35.30,zone:'מרכז'},
+  {n:'ים המלח',       lat:31.50,lng:35.47,zone:'דרום'},
+  {n:'עין גדי',      lat:31.46,lng:35.39,zone:'דרום'},
+  {n:'אשקלון ואשדוד',lat:31.67,lng:34.57,zone:'דרום'},
+  {n:'באר שבע',      lat:31.25,lng:34.79,zone:'דרום'},
+  {n:'נגב ומצפה רמון',lat:30.61,lng:34.80,zone:'דרום'},
+  {n:'ערבה',          lat:30.00,lng:35.15,zone:'דרום'},
+  {n:'אילת',          lat:29.56,lng:34.95,zone:'דרום'},
+];
+
+// 11 מילות חיפוש — כל סוגי הנכסים
+const KWS = [
+  'צימר','וילה נופש','דירת נופש','קמפוס נופש',
+  'guest house','vacation rental','zimmer israel',
+  'בית הארחה','צריף נופש','סוויטה','holiday apartment'
+];
+
+// ═══════════════════════════════
+// STATE
+// ═══════════════════════════════
+let chatHistory = [];
+let fbIdx = 0;
+let allProps = [];
+let curResults = [];
+let dispPage = 0;
+let totalFound = 0;
+
+// ═══════════════════════════════
+// GOOGLE PLACES — FULL PAGINATION
+// ═══════════════════════════════
+// חילוץ עיר/אזור ספציפי מהשיחה
+function extractCity(ctx) {
+  const c = ctx.toLowerCase();
+  const cityMap = [
+    {keys:['באר שבע','באר-שבע','beer sheva'],    name:'באר שבע'},
+    {keys:['אילת','eilat'],                        name:'אילת'},
+    {keys:['טבריה','tiberias'],                    name:'טבריה'},
+    {keys:['כנרת','כינרת'],                        name:'כנרת'},
+    {keys:['ירושלים','jerusalem'],                 name:'ירושלים'},
+    {keys:['תל אביב','tel aviv','יפו'],            name:'תל אביב'},
+    {keys:['חיפה','haifa'],                        name:'חיפה'},
+    {keys:['נתניה','netanya'],                     name:'נתניה'},
+    {keys:['אשקלון','ashkelon'],                   name:'אשקלון'},
+    {keys:['אשדוד','ashdod'],                      name:'אשדוד'},
+    {keys:['קצרין','katzrin'],                     name:'קצרין'},
+    {keys:['צפת','safed'],                         name:'צפת'},
+    {keys:['ראש פינה','rosh pina'],                name:'ראש פינה'},
+    {keys:['עכו','acre'],                          name:'עכו'},
+    {keys:['נהריה','nahariya'],                    name:'נהריה'},
+    {keys:['נצרת','nazareth'],                     name:'נצרת'},
+    {keys:['מצפה רמון','mitzpe ramon'],            name:'מצפה רמון'},
+    {keys:['זכרון','zichron'],                     name:'זכרון יעקב'},
+    {keys:['קיסריה','caesarea'],                   name:'קיסריה'},
+    {keys:['עין גדי','ein gedi'],                  name:'עין גדי'},
+    {keys:['ים המלח','dead sea'],                  name:'ים המלח'},
+    {keys:['מודיעין','modi\'in'],                  name:'מודיעין'},
+  ];
+  for (const city of cityMap) {
+    if (city.keys.some(k => c.includes(k))) return city.name;
+  }
+  return null; // לא זוהתה עיר ספציפית
+}
+
+// סינון תוצאות לפי עיר מבוקשת
+function filterByCity(props, cityName) {
+  if (!cityName) return props;
+  const words = cityName.toLowerCase().split(' ').filter(w => w.length > 1);
+  const filtered = props.filter(p => {
+    const loc = (p.rawVicinity || p.location || '').toLowerCase();
+    return words.some(w => loc.includes(w));
+  });
+  // אם לא נמצא כלום — החזר הכל (fallback)
+  return filtered.length > 0 ? filtered : props;
+}
+
+function pickRegions(ctx) {
+  const c = ctx.toLowerCase();
+
+  // עיר ספציפית — רדיוס קטן, אזור יחיד
+  if (/באר שבע|באר-שבע|beer sheva/.test(c))    return [{ ...REGIONS.find(r=>/באר שבע/.test(r.n)), specific:true }];
+  if (/אילת/.test(c))                            return [{ ...REGIONS.find(r=>/אילת/.test(r.n)),    specific:true }];
+  if (/כנרת|טבריה|כינרת/.test(c))               return [{ ...REGIONS.find(r=>/כנרת|טבריה/.test(r.n)), specific:true }];
+  if (/גולן|קצרין/.test(c))                      return REGIONS.filter(r=>/גולן/.test(r.n)).map(r=>({...r,specific:true}));
+  if (/ים המלח|עין גדי|מסדה/.test(c))           return REGIONS.filter(r=>/ים המלח|עין גדי/.test(r.n)).map(r=>({...r,specific:true}));
+  if (/ירושלים|jerusalem/.test(c))               return [{ ...REGIONS.find(r=>/ירושלים/.test(r.n)), specific:true }];
+  if (/מצפה רמון/.test(c))                       return [{ ...REGIONS.find(r=>/נגב|מצפה/.test(r.n)), specific:true }];
+  if (/ערבה/.test(c))                            return [{ ...REGIONS.find(r=>/ערבה/.test(r.n)),   specific:true }];
+  if (/אשקלון|אשדוד/.test(c))                   return [{ ...REGIONS.find(r=>/אשקלון/.test(r.n)), specific:true }];
+  if (/תל אביב|יפו|גוש דן/.test(c))             return [{ ...REGIONS.find(r=>/תל אביב/.test(r.n)), specific:true }];
+  if (/חיפה|כרמל/.test(c))                      return [{ ...REGIONS.find(r=>/כרמל|חיפה/.test(r.n)), specific:true }];
+  if (/עכו|נהריה/.test(c))                      return [{ ...REGIONS.find(r=>/עכו|נהריה/.test(r.n)), specific:true }];
+  if (/נצרת|עמקים|יזרעאל/.test(c))              return [{ ...REGIONS.find(r=>/נצרת|יזרעאל/.test(r.n)), specific:true }];
+  if (/קיסריה/.test(c))                          return [{ ...REGIONS.find(r=>/קיסריה/.test(r.n)), specific:true }];
+  if (/זכרון|בנימינה/.test(c))                  return [{ ...REGIONS.find(r=>/זכרון/.test(r.n)),  specific:true }];
+  if (/נתניה|חדרה/.test(c))                     return [{ ...REGIONS.find(r=>/נתניה|חדרה/.test(r.n)), specific:true }];
+  if (/ראש פינה|צפת/.test(c))                   return [{ ...REGIONS.find(r=>/ראש פינה|צפת/.test(r.n)), specific:true }];
+  if (/מודיעין/.test(c))                         return [{ ...REGIONS.find(r=>/מודיעין/.test(r.n)), specific:true }];
+  if (/נגב/.test(c))                             return REGIONS.filter(r=>r.zone==='דרום');
+
+  // אזורים כלליים
+  if (/גליל/.test(c))   return REGIONS.filter(r=>r.zone==='צפון');
+  if (/צפון/.test(c))   return REGIONS.filter(r=>r.zone==='צפון'||r.zone==='מרכז-צפון');
+  if (/מרכז/.test(c))   return REGIONS.filter(r=>r.zone==='מרכז');
+  if (/דרום/.test(c))   return REGIONS.filter(r=>r.zone==='דרום');
+
+  return REGIONS; // כל ישראל
+}
+
+// שליפת דף אחד — דרך Netlify Function (פותר CORS)
+async function fetchPage(location, radius, keyword, pagetoken) {
+  let url;
+  if (pagetoken) {
+    url = `/.netlify/functions/places?pagetoken=${encodeURIComponent(pagetoken)}`;
+  } else {
+    url = `/.netlify/functions/places?location=${location}&radius=${radius}&keyword=${encodeURIComponent(keyword)}`;
+  }
+  const r = await fetch(url);
+  const d = await r.json();
+  if (d.status === 'REQUEST_DENIED') throw new Error('API_DENIED: ' + d.error_message);
+  return d;
+}
+
+// שליפה עם pagination — עד 3 דפים
+// רדיוס 10 ק"מ לעיר ספציפית, 25 ק"מ לאזור
+async function fetchWithPagination(reg, kw) {
+  const results = [];
+  const radius = reg.specific ? 10000 : 25000;
+  const location = `${reg.lat},${reg.lng}`;
+
+  try {
+    const d1 = await fetchPage(location, radius, kw, null);
+    for (const p of (d1.results||[])) results.push(p);
+    if (!d1.next_page_token) return results;
+
+    await sleep(2100);
+    const d2 = await fetchPage(null, null, null, d1.next_page_token);
+    for (const p of (d2.results||[])) results.push(p);
+    if (!d2.next_page_token) return results;
+
+    await sleep(2100);
+    const d3 = await fetchPage(null, null, null, d2.next_page_token);
+    for (const p of (d3.results||[])) results.push(p);
+  } catch(e) {
+    console.warn('Places error:', e.message);
+  }
+  return results;
+}
+
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function fetchAll(ctx) {
+  const regions = pickRegions(ctx);
+  const kws = KWS.slice(0, 5); // 5 מילות מפתח עיקריות
+  const seen = new Set();
+  totalFound = 0;
+
+  const totalOps = regions.length * kws.length;
+  let doneOps = 0;
+
+  initRtags(regions);
+
+  // חיפוש מקבילי לפי אזורים — כל האזורים בבת אחת
+  const regionPromises = regions.map(async (reg) => {
+    const regResults = [];
+    // בתוך כל אזור — מילות מפתח ברצף (בגלל pagination)
+    for (const kw of kws) {
+      const raw = await fetchWithPagination(reg, kw);
+      for (const p of raw) {
+        if (!seen.has(p.place_id)) {
+          seen.add(p.place_id);
+          regResults.push(toCard(p, reg));
+          totalFound++;
+          document.getElementById('lcount').textContent = totalFound.toLocaleString();
+        }
+      }
+      doneOps++;
+      const pct = Math.round((doneOps / totalOps) * 100);
+      document.getElementById('pbar').style.width = pct + '%';
+      document.getElementById('ppct').textContent = pct + '%';
+      document.getElementById('pinfo').textContent =
+        `${reg.n} — ${totalFound.toLocaleString()} נכסים`;
+    }
+    markDone(reg.n);
+    return regResults;
+  });
+
+  const nested = await Promise.all(regionPromises);
+  return nested.flat();
+}
+
+// ═══════════════════════════════
+// NORMALIZE
+// ═══════════════════════════════
+function toCard(p, reg) {
+  const n   = (p.name||'').toLowerCase();
+  const vic = p.vicinity || reg.n;
+
+  const emoji =
+    /קמפוס|אחוזה|מתחם/.test(n) ? '🏘️' :
+    /וילה|villa/.test(n)        ? '🏡' :
+    /דירה|סוויטה|apart/.test(n) ? '🏢' :
+    /בוטיק|boutique/.test(n)    ? '🌿' :
+    /ים|beach|lake|כנרת/.test(n)? '🌊' :
+    /יער|טבע|forest/.test(n)    ? '🌲' : '🛏️';
+
+  const tags = [reg.zone, reg.n];
+  if (/וילה|villa/.test(n))    tags.push('וילה');
+  if (/קמפוס|אחוזה/.test(n))  tags.push('קמפוס','קבוצות');
+  if (/דירה|apart/.test(n))   tags.push('דירה');
+  if (/כנרת|טבריה/.test(vic)) tags.push('כנרת');
+  if (/גליל/.test(vic))       tags.push('גליל');
+  if (/גולן/.test(vic))       tags.push('גולן');
+  if (/ירושלים/.test(vic))    tags.push('ירושלים');
+  if (/ים המלח/.test(vic))    tags.push('ים המלח');
+  if (/אילת/.test(vic))       tags.push('אילת');
+  if (/כשר|kosher/.test(n))   tags.push('כשר');
+
+  const amen = [];
+  if (/בריכה|pool/.test(n))       amen.push('בריכה');
+  if (/ג.?קוזי|jacuzzi/.test(n))  amen.push('ג׳קוזי');
+  if (/ספא|spa/.test(n))          amen.push('ספא');
+  if (/כשר|kosher/.test(n))       amen.push('כשר');
+  if (p.rating)                    amen.push(p.rating+'★');
+  if ((p.user_ratings_total||0)>50) amen.push(p.user_ratings_total+' ביקורות');
+  if (!amen.length)                amen.push('נכס נופש');
+
+  const shortVic = vic.split(',')[0];
+
+  return {
+    id:      p.place_id,
+    placeId: p.place_id,
+    title:   p.name,
+    location:`${reg.n}${shortVic!==reg.n?' — '+shortVic:''}`,
+    rawVicinity: vic, // לסינון עיר
+    emoji, tags, amen,
+    desc:    `${p.name} — נכס נופש ב${reg.n}.${p.rating?' דירוג '+p.rating+'★ ('+p.user_ratings_total+' ביקורות).':''}`,
+    rating:  p.rating||null,
+    reviews: p.user_ratings_total||0,
+    photo:   p.photos?.[0]?.photo_reference||null,
+    zone:    reg.zone,
+    match:   50,
+    isGoogle:true,
+  };
+}
+
+function photoUrl(ref) {
+  return `/.netlify/functions/photo?ref=${encodeURIComponent(ref)}`;
+}
+
+// ═══════════════════════════════
+// PROGRESS UI
+// ═══════════════════════════════
+function initRtags(regions) {
+  document.getElementById('rtags').innerHTML =
+    regions.map(r=>`<span class="rtag" id="rt-${r.n.replace(/[\s׳]/g,'_')}">${r.n}</span>`).join('');
+}
+function markActive(name) {
+  const el = document.getElementById('rt-'+name.replace(/[\s׳]/g,'_'));
+  if(el) el.className='rtag active';
+}
+function markDone(name) {
+  const el = document.getElementById('rt-'+name.replace(/[\s׳]/g,'_'));
+  if(el) el.className='rtag done';
+}
+
+// ═══════════════════════════════
+// CHAT
+// ═══════════════════════════════
+const SYS = `אתה עוזר חיפוש צימרים ונופש ישראלי, ידידותי ותמציתי.
+
+לפני שאתה שואל כלום — נתח את כל מה שנאמר עד כה וזהה מה כבר ידוע:
+- מועד/תאריך: תאריך, יום, חודש, "סוף שבוע", "שבת", חגים יהודיים (ראש השנה, יום כיפור, סוכות, חנוכה, פורים, פסח, שבועות, ל"ג בעומר), "בין הזמנים", "קיץ"
+- משך: "לילה", "לילומיים", "שבוע", "3 ימים", מספר לילות
+- אנשים: "זוג", "משפחה", מספר אנשים, "ילדים", "חדרי הורים"
+- אזור/עיר: שם עיר, אזור, "צפון", "דרום", "ים המלח"
+- תקציב: סכום כסף, "זול", "יוקרה", "עד X ש״ח"
+- דרישות: "בריכה", "ג׳קוזי", "כשר", "כלב", "נגיש"
+
+כלל ברזל: אם פרט כבר ניתן — אל תשאל עליו. בשום פנים ואופן.
+
+כשאתה שואל על מועד — כתוב בדיוק: DATE_PICKER (המערכת תציג תפריט חגים ומועדים).
+שאל רק על פרטים חסרים, שאלה אחת בכל פעם.
+אחרי שיש לפחות אזור + עוד 2 פרטים — כתוב סיכום קצר ואז: READY
+עברית בלבד.`;
+
+
+const FBQ = [
+  {q:'מתי?',                   qr:['סוף שבוע הקרוב','אמצע שבוע','חודש הבא','גמיש']},
+  {q:'כמה לילות?',             qr:['לילה','2 לילות','3 לילות','שבוע']},
+  {q:'כמה אנשים, ומה ההרכב?', qr:['זוג','משפחה עם ילדים','קבוצת חברים','חדרי הורים נפרדים']},
+  {q:'איזה אזור?',             qr:['גליל וצפון','כנרת','גולן','ים המלח','אילת','ירושלים','מרכז','כל ישראל']},
+  {q:'תקציב ללילה?',           qr:['עד 600 ₪','600–1200 ₪','1200–2500 ₪','גמיש']},
+  {q:'דרישות מיוחדות?',       qr:['בריכה','ג׳קוזי','כשרות','חיות מחמד','נגישות','ללא']},
+];
+
+async function callClaude(sys, msgs, tok=400) {
+  const r = await fetch(CLAUDE,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:tok,system:sys,messages:msgs})});
+  const d = await r.json();
+  return d.content?.[0]?.text||'';
+}
+
+async function startChat() {
+  const v = document.getElementById('iinput').value.trim();
+  if(!v){document.getElementById('iinput').focus();return;}
+  document.getElementById('phase-start').style.display='none';
+  document.getElementById('phase-chat').style.display='block';
+  document.getElementById('sugwrap').style.display='none';
+  chatHistory.push({role:'user',content:v});
+  addU(v);
+
+  // בדוק אם יש כבר מספיק מידע בהודעה הראשונה
+  const c = v.toLowerCase();
+  const hasArea    = /באר שבע|אילת|כנרת|טבריה|גליל|גולן|ירושלים|תל אביב|חיפה|ים המלח|צפון|דרום|מרכז|נתניה|אשקלון|עכו|נהריה|רמון|זכרון|קיסריה|רחובות|פתח תקוה|ראשון|הרצליה/.test(c);
+  const hasDate    = /\d|ינואר|פברואר|מרץ|אפריל|מאי|יוני|יולי|אוגוסט|ספטמבר|אוקטובר|נובמבר|דצמבר|סוף שבוע|שבת|חג/.test(c);
+  const hasPeople  = /זוג|משפחה|אנשים|ילדים|הורים|\d\s*איש|חדרים/.test(c);
+  const infoCount  = [hasArea, hasDate, hasPeople].filter(Boolean).length;
+
+  // אם 3 פרטים ויותר — אפשר לדלג לסיכום מיידי
+  if (infoCount >= 3) {
+    const sum = `מצוין! יש לי את כל מה שצריך:\n• ${v}\nאני מחפש לך עכשיו...`;
+    addAI(sum, null, true);
+    document.getElementById('cir').style.display='none';
+    document.getElementById('cacts').style.display='flex';
+    return;
+  }
+
+  await nextQ();
+}
+
+function fas(t){document.getElementById('iinput').value=t;startChat();}
+
+async function sendMsg() {
+  const ta=document.getElementById('cta2');
+  const v=ta.value.trim();if(!v)return;
+  ta.value='';ta.style.height='auto';
+  chatHistory.push({role:'user',content:v});
+  addU(v);
+  await nextQ();
+}
+
+async function nextQ() {
+  document.getElementById('sbtn').disabled=true;
+  showT();
+  try {
+    const r = await callClaude(SYS,chatHistory);
+    chatHistory.push({role:'assistant',content:r});
+    hideT();
+    handleR(r);
+  } catch {
+    hideT();
+    fbFall();
+  }
+  document.getElementById('sbtn').disabled=false;
+  document.getElementById('cta2').focus();
+}
+
+function handleR(r) {
+  if (r.includes('READY')) {
+    addAI(r.replace('READY','').trim(), null, true);
+    document.getElementById('cir').style.display='none';
+    document.getElementById('cacts').style.display='flex';
+  } else if (r.includes('DATE_PICKER')) {
+    const text = r.replace('DATE_PICKER','').trim();
+    if (text) addAI(text);
+    showDatePicker();
+  } else {
+    addAI(r, detectQR(r));
+  }
+  scrollW();
+}
+
+// חגים ומועדים קבועים — מתעדכן לפי שנה
+function getJewishDates() {
+  const now = new Date();
+  const y = now.getFullYear();
+  // תאריכים גרגוריאניים קירוביים לשנת y
+  return [
+    // חגים קבועים לפי שנה
+    {label:'ראש השנה תשפ"ו',      val:'ראש השנה — 22–24 ספטמבר 2025'},
+    {label:'יום כיפור',            val:'יום כיפור — 1 אוקטובר 2025'},
+    {label:'סוכות',               val:'סוכות — 6–13 אוקטובר 2025'},
+    {label:'חנוכה',               val:'חנוכה — 14–22 דצמבר 2025'},
+    {label:'פסח',                 val:'פסח — 1–8 אפריל 2026'},
+    {label:'שבועות',              val:'שבועות — 21–23 מאי 2026'},
+    // בין הזמנים
+    {label:'בין הזמנים ניסן',     val:'בין הזמנים ניסן — פסח 2026'},
+    {label:'בין הזמנים תשרי',     val:'בין הזמנים תשרי — סוכות 2025'},
+    {label:'בין הזמנים אב',       val:'בין הזמנים אב — אוגוסט 2026'},
+    // שוטף
+    {label:'סוף שבוע הקרוב',      val:'סוף שבוע הקרוב'},
+    {label:'אמצע שבוע',           val:'אמצע שבוע'},
+    {label:'חופשת קיץ',           val:'חופשת קיץ — יולי-אוגוסט 2026'},
+    {label:'ט"ו בשבט',            val:'ט"ו בשבט — פברואר 2026'},
+    {label:'פורים',               val:'פורים — מרץ 2026'},
+    {label:'ל"ג בעומר',           val:'ל"ג בעומר — מאי 2026'},
+    {label:'גמיש / טרם נקבע',    val:'גמיש — תאריך פתוח'},
+  ];
+}
+
+function detectQR(t) {
+  if(/מתי|מועד|תאריך|חג|זמן/.test(t)) return null; // נשתמש בתפריט חגים מיוחד
+  if(/כמה לילות|משך|לילות/.test(t))   return ['לילה אחד','2 לילות','3 לילות','4 לילות','שבוע'];
+  if(/כמה אנשים|הרכב|מי/.test(t))     return ['זוג','משפחה עם ילדים','קבוצת חברים','חדרי הורים נפרדים','יחיד'];
+  if(/אזור|איפה|עיר|מיקום/.test(t))   return ['גליל וצפון','כנרת','גולן','ים המלח','אילת','ירושלים','מרכז','באר שבע','כל ישראל'];
+  if(/תקציב|מחיר|עלות|כמה עולה/.test(t)) return ['עד 500 ₪','500–900 ₪','900–1500 ₪','1500–3000 ₪','ללא הגבלה'];
+  if(/דרישות|מיוחד|חשוב|תכונות/.test(t)) return ['בריכה פרטית','ג׳קוזי','כשרות מהדרין','חיות מחמד','נגישות','BBQ','ספא','ללא דרישות'];
+  return null;
+}
+
+// הצגת תפריט תאריכים/חגים מיוחד
+function showDatePicker() {
+  const dates = getJewishDates();
+  const win = document.getElementById('cwin');
+  const d = document.createElement('div');
+  d.className = 'mai'; d.id = 'date-picker-msg';
+  d.innerHTML = `
+    <div class="aav">AI</div>
+    <div class="abub">
+      מתי אתם מתכננים להגיע? בחרו מועד:
+      <div class="date-grid">
+        ${dates.map(dt=>`
+          <button class="date-btn" onclick="pickDate('${esc(dt.val)}')">
+            <span class="date-icon">${getDateIcon(dt.label)}</span>
+            <span class="date-label">${dt.label}</span>
+          </button>`).join('')}
+      </div>
+    </div>`;
+  win.appendChild(d);
+  scrollW();
+}
+
+function getDateIcon(label) {
+  if (/ראש השנה|כיפור/.test(label))    return '🍎';
+  if (/סוכות/.test(label))             return '🌿';
+  if (/חנוכה/.test(label))             return '🕎';
+  if (/פסח/.test(label))               return '🫓';
+  if (/שבועות/.test(label))            return '🌸';
+  if (/בין הזמנים/.test(label))        return '📚';
+  if (/סוף שבוע/.test(label))          return '🌅';
+  if (/אמצע שבוע/.test(label))         return '📅';
+  if (/קיץ/.test(label))               return '☀️';
+  if (/פורים/.test(label))             return '🎭';
+  if (/ל"ג בעומר/.test(label))         return '🔥';
+  if (/ט"ו בשבט/.test(label))          return '🌳';
+  if (/גמיש/.test(label))              return '🗓️';
+  return '📅';
+}
+
+function pickDate(val) {
+  document.getElementById('date-picker-msg')?.remove();
+  chatHistory.push({role:'user', content:val});
+  addU(val);
+  nextQ();
+}
+
+function fbFall() {
+  const ctx = chatHistory.map(m=>m.content).join(' ').toLowerCase();
+
+  const known = {
+    date:    /\d+.*ב|ינואר|פברואר|מרץ|אפריל|מאי|יוני|יולי|אוגוסט|ספטמבר|אוקטובר|נובמבר|דצמבר|סוף שבוע|שבת|ראש השנה|חג|סוכות|פסח|חנוכה|שבועות|בין הזמנים|פורים|קיץ|גמיש/.test(ctx),
+    nights:  /לילה|לילות|ימים|שבוע|לינה/.test(ctx),
+    people:  /זוג|משפחה|אנשים|חדרים|ילדים|הורים|\d\s*איש/.test(ctx),
+    area:    /באר שבע|אילת|כנרת|טבריה|גליל|גולן|ירושלים|תל אביב|חיפה|ים המלח|צפון|דרום|מרכז|נתניה|אשקלון/.test(ctx),
+    budget:  /ש"ח|שקל|תקציב|זול|יוקרה|עד \d|₪/.test(ctx),
+    special: /בריכה|ג.?קוזי|כשר|כלב|נגיש|ספא/.test(ctx),
+  };
+
+  if (!known.area)   { addAI('באיזה עיר או אזור?', ['גליל וצפון','כנרת','גולן','ים המלח','אילת','ירושלים','באר שבע','תל אביב','כל ישראל']); return; }
+  if (!known.date)   { showDatePicker(); return; }
+  if (!known.nights) { addAI('כמה לילות?', ['לילה אחד','2 לילות','3 לילות','4 לילות','שבוע']); return; }
+  if (!known.people) { addAI('כמה אנשים ומה ההרכב?', ['זוג','משפחה עם ילדים','קבוצת חברים','חדרי הורים נפרדים']); return; }
+  if (!known.budget) { addAI('מה התקציב ללילה?', ['עד 500 ₪','500–900 ₪','900–1500 ₪','1500+ ₪','גמיש']); return; }
+  if (!known.special){ addAI('דרישות מיוחדות?', ['בריכה','ג׳קוזי','כשרות','חיות מחמד','נגישות','ללא']); return; }
+
+  const sum = 'מצוין! יש לי את כל הפרטים.\n'
+    + chatHistory.filter(m=>m.role==='user').map(m=>'• '+m.content).join('\n');
+  addAI(sum, null, true);
+  document.getElementById('cir').style.display='none';
+  document.getElementById('cacts').style.display='flex';
+}
+
+function pickQR(t) {
+  document.querySelectorAll('.qrs').forEach(e=>e.remove());
+  chatHistory.push({role:'user',content:t});
+  addU(t);
+  nextQ();
+}
+
+// ═══════════════════════════════
+// MAIN SEARCH
+// ═══════════════════════════════
+async function runSearch() {
+  document.getElementById('cacts').style.display='none';
+  document.getElementById('rsec').classList.remove('on');
+  document.getElementById('loading').classList.add('on');
+  document.getElementById('lcount').textContent='0';
+  document.getElementById('pbar').style.width='0%';
+
+  // כולל גם תשובות AI לקשר מלא
+  const ctx = chatHistory.map(m=>m.content).join(' ');
+
+  // הצג לאיזה אזורים מחפש
+  const detectedRegions = pickRegions(ctx);
+  const requestedCityEarly = extractCity(ctx);
+  const regionNames = requestedCityEarly || detectedRegions.map(r=>r.n).join(', ');
+  document.getElementById('ltxt').textContent=`מחפש ב: ${regionNames}...`;
+  let gProps;
+  try {
+    gProps = await fetchAll(ctx);
+  } catch(e) {
+    console.error(e);
+    gProps = [];
+  }
+
+  // סינון לפי עיר ספציפית אם זוהתה
+  const requestedCity = extractCity(ctx);
+  if (requestedCity && gProps.length > 0) {
+    const filtered = filterByCity(gProps, requestedCity);
+    document.getElementById('ltxt').textContent =
+      `נמצאו ${filtered.length} נכסים ב${requestedCity} מתוך ${gProps.length} — AI מדרג...`;
+    gProps = filtered;
+  }
+
+  allProps = gProps.length > 0 ? gProps : getSeed();
+
+  // שלב 2: Claude מדרג
+  document.getElementById('ltxt').textContent=`נמצאו ${allProps.length.toLocaleString()} נכסים — AI מדרג...`;
+  try {
+    // שלח ל-Claude עד 100 נכסים לדירוג
+    const subset = allProps.slice(0,100);
+    const list = JSON.stringify(subset.map((p,i)=>({
+      i,title:p.title,location:p.location,tags:p.tags,rating:p.rating,reviews:p.reviews
+    })));
+    const sys = `דרג נכסי נופש 0–100 לפי התאמה לבקשה.
+קמפוס/חדרי הורים=90–99 אם מבוקש; אזור תואם=+20; דירוג≥4.7=+10; ביקורות רבות=+5.
+JSON בלבד: {"summary":"1-2 משפטים","r":[{"i":מספר,"s":ציון,"why":"סיבה"}]}`;
+    const reply = await callClaude(sys,[{role:'user',content:`בקשה: ${ctx}\nנכסים:\n${list}`}],1500);
+    const parsed = JSON.parse(reply.replace(/```json|```/g,'').trim());
+    parsed.r?.forEach(x=>{ if(allProps[x.i]){allProps[x.i].match=x.s;allProps[x.i].why=x.why;} });
+    allProps.slice(100).forEach(p=>{ p.match=scoreLocal(p,ctx); });
+    allProps.sort((a,b)=>b.match-a.match);
+    finish(parsed.summary, gProps.length);
+  } catch {
+    allProps.forEach(p=>{ p.match=scoreLocal(p,ctx); });
+    allProps.sort((a,b)=>b.match-a.match);
+    finish(`מצאתי ${allProps.length.toLocaleString()} נכסים מכל ישראל — ממוינים לפי ההתאמה שלך.`, gProps.length);
+  }
+}
+
+function scoreLocal(p,ctx) {
+  let s=40;
+  const q=ctx.toLowerCase();
+  const t=(p.tags||[]).join(' ').toLowerCase();
+  const n=(p.title||'').toLowerCase();
+  if(/קמפוס|חדרי הורים/.test(q)&&/קמפוס|חדרי הורים/.test(t+n)) s+=40;
+  if(/בריכה/.test(q)&&/בריכ/.test(n)) s+=12;
+  if(/ג.?קוזי/.test(q)&&/ג.?קוזי/.test(n)) s+=12;
+  if(/רומנטי|זוג/.test(q)&&/רומנט/.test(t+n)) s+=15;
+  if(/כלב/.test(q)&&/חיות/.test(t)) s+=15;
+  if(/כשר/.test(q)&&/כשר/.test(t+n)) s+=20;
+  if((p.rating||0)>=4.7) s+=10;
+  if((p.reviews||0)>200) s+=5;
+  ['כנרת','גליל','גולן','ים המלח','אילת','ירושלים'].forEach(a=>{
+    if(q.includes(a)&&(p.location||'').includes(a)) s+=15;
+  });
+  return Math.max(10,Math.min(99,s));
+}
+
+function finish(summary, gCount) {
+  document.getElementById('loading').classList.remove('on');
+  curResults=[...allProps]; dispPage=0;
+
+  document.getElementById('aibox').textContent=summary;
+  document.getElementById('rcnt').innerHTML=
+    `<strong>${allProps.length.toLocaleString()}</strong> נכסים נמצאו`;
+  document.getElementById('rsrc').textContent=
+    gCount>0
+      ? `✓ ${gCount.toLocaleString()} מ-Google Places · ${REGIONS.length} אזורים · pagination מלא (עד 60 לאזור)`
+      : '✓ נכסי דוגמה (פרוס ב-Netlify לנתונים אמיתיים)';
+
+  document.getElementById('stcount').textContent=allProps.length.toLocaleString()+'+';
+  buildFbar();
+  renderCards(curResults.slice(0,PAGE_SZ));
+  document.getElementById('lmore').style.display=curResults.length>PAGE_SZ?'block':'none';
+  document.getElementById('rsec').classList.add('on');
+  document.getElementById('rsec').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ═══════════════════════════════
+// FILTER + RENDER
+// ═══════════════════════════════
+function buildFbar() {
+  const zones=[...new Set(allProps.map(p=>p.zone).filter(Boolean))];
+  document.getElementById('fbar').innerHTML=
+    `<button class="fbtn on" onclick="fzone('all',this)">הכל (${allProps.length})</button>`
+    +zones.map(z=>`<button class="fbtn" onclick="fzone('${z}',this)">${z} (${allProps.filter(p=>p.zone===z).length})</button>`).join('');
+}
+
+function fzone(zone,btn) {
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  curResults=zone==='all'?[...allProps]:allProps.filter(p=>p.zone===zone);
+  dispPage=0;
+  renderCards(curResults.slice(0,PAGE_SZ));
+  document.getElementById('lmore').style.display=curResults.length>PAGE_SZ?'block':'none';
+}
+
+function sortBy(mode) {
+  let s=[...curResults];
+  if(mode==='rating')  s.sort((a,b)=>(b.rating||0)-(a.rating||0));
+  else if(mode==='reviews') s.sort((a,b)=>(b.reviews||0)-(a.reviews||0));
+  else if(mode==='alpha')   s.sort((a,b)=>a.title.localeCompare(b.title,'he'));
+  else s.sort((a,b)=>b.match-a.match);
+  curResults=s; dispPage=0;
+  renderCards(curResults.slice(0,PAGE_SZ));
+  document.getElementById('lmore').style.display=curResults.length>PAGE_SZ?'block':'none';
+}
+
+function loadMore() {
+  dispPage++;
+  const start=dispPage*PAGE_SZ;
+  renderCards(curResults.slice(start,start+PAGE_SZ));
+  if(start+PAGE_SZ>=curResults.length)
+    document.getElementById('lmore').style.display='none';
+}
+
+function renderCards(props) {
+  const grid=document.getElementById('grid');
+  if(dispPage===0) grid.innerHTML='';
+  props.forEach((p,idx)=>{
+    const c=document.createElement('div');
+    c.className=`card${idx===0&&dispPage===0?' top':''}`;
+    const imgH=p.photo
+      ?`<img class="cimg" src="${photoUrl(p.photo)}" alt="${esc(p.title)}" loading="lazy"
+          onerror="this.outerHTML='<div class=cph>${p.emoji}</div>'">`
+      :`<div class="cph">${p.emoji}</div>`;
+    const rH=p.rating
+      ?`<span class="stars">★</span> ${p.rating} <span style="color:var(--text3)">(${p.reviews})</span>`
+      :`<span style="color:var(--text3);font-size:12px">אין דירוג</span>`;
+    c.innerHTML=`
+      ${imgH}
+      <div class="cbody">
+        <div class="cloc">📍 ${esc(p.location)}</div>
+        <div class="ctitle">${esc(p.title)}</div>
+        <div class="cdesc">${esc(p.desc)}</div>
+        <div class="mrow">
+          <span>התאמה</span>
+          <div class="mtrack"><div class="mfill"></div></div>
+          <span class="mpct">${p.match}%</span>
+        </div>
+        ${p.why?`<div class="cwhy">✦ ${esc(p.why)}</div>`:''}
+        <div class="amens">${(p.amen||[]).map(a=>`<span class="am">${esc(a)}</span>`).join('')}</div>
+        <div class="cfoot">
+          <div class="crat">${rH}</div>
+          <span style="font-size:11px;color:var(--text3)">${p.zone||''}</span>
+        </div>
+        <button class="ccta" onclick="openPlace('${p.id}')">פתח בגוגל מפות ←</button>
+      </div>`;
+    grid.appendChild(c);
+    setTimeout(()=>{const f=c.querySelector('.mfill');if(f)f.style.width=p.match+'%';},80*idx);
+  });
+}
+
+function openPlace(id) {
+  const p=allProps.find(x=>x.id===id);
+  if(p?.isGoogle) window.open(`https://www.google.com/maps/place/?q=place_id:${p.placeId}`,'_blank');
+  else alert('פרטי נכס — בקרוב!');
+}
+
+// ═══════════════════════════════
+// DOM HELPERS
+// ═══════════════════════════════
+function addU(t){
+  const w=document.getElementById('cwin');
+  const d=document.createElement('div');d.className='muser';
+  d.innerHTML=`<div class="ubub">${esc(t)}</div>`;
+  w.appendChild(d);scrollW();
+}
+function addAI(t,qr,isSum){
+  const w=document.getElementById('cwin');
+  const d=document.createElement('div');d.className='mai';
+  const qrH=qr?.length?`<div class="qrs">${qr.map(r=>`<button class="qr" onclick="pickQR('${esc(r)}')">${r}</button>`).join('')}</div>`:'';
+  const sH=isSum?`<div class="scard">✦ לחץ <strong>חפש בכל ישראל</strong> למטה</div>`:'';
+  d.innerHTML=`<div class="aav">AI</div><div class="abub">${esc(t).replace(/\n/g,'<br>')}${qrH}${sH}</div>`;
+  w.appendChild(d);scrollW();
+}
+function showT(){
+  const w=document.getElementById('cwin');
+  const d=document.createElement('div');d.className='typing';d.id='typing';
+  d.innerHTML=`<div class="aav">AI</div><div class="tdots"><span></span><span></span><span></span></div>`;
+  w.appendChild(d);scrollW();
+}
+function hideT(){document.getElementById('typing')?.remove();}
+function scrollW(){const w=document.getElementById('cwin');setTimeout(()=>{w.scrollTop=w.scrollHeight;},50);}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function resetAll(){
+  chatHistory=[];fbIdx=0;allProps=[];curResults=[];dispPage=0;totalFound=0;
+  document.getElementById('phase-chat').style.display='none';
+  document.getElementById('phase-start').style.display='block';
+  document.getElementById('sugwrap').style.display='flex';
+  document.getElementById('iinput').value='';
+  document.getElementById('cwin').innerHTML='';
+  document.getElementById('cir').style.display='flex';
+  document.getElementById('cacts').style.display='none';
+  document.getElementById('rsec').classList.remove('on');
+  document.getElementById('loading').classList.remove('on');
+  document.getElementById('pbar').style.width='0%';
+  document.getElementById('lcount').textContent='0';
+}
+
+// ═══════════════════════════════
+// EVENT LISTENERS — טעינת דף
+// ═══════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  // תיבת חיפוש ראשית
+  const iinput = document.getElementById('iinput');
+  if (iinput) {
+    iinput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        startChat();
+      }
+    });
+    iinput.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+    // פוקוס אוטומטי
+    setTimeout(() => iinput.focus(), 300);
+  }
+
+  // תיבת צ'אט
+  const cta2 = document.getElementById('cta2');
+  if (cta2) {
+    cta2.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMsg();
+      }
+    });
+    cta2.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+    });
+  }
+});
+
+function getSeed(){return[
+  {id:'s1',title:'וילה לה טוסקנה',location:'גליל עליון — ראש פינה',emoji:'🏡',
+   desc:'וילה יוקרה עם בריכה מחוממת וג׳קוזי.',amen:['בריכה','ג׳קוזי','5 חד׳'],
+   rating:4.9,reviews:87,tags:['צפון','גליל'],zone:'צפון',match:90,photo:null,isGoogle:false},
+  {id:'s2',title:'סוויטת הגפן',location:'כנרת',emoji:'🌊',
+   desc:'סוויטה זוגית עם נוף לכנרת וג׳קוזי פרטי.',amen:['ג׳קוזי','נוף לכנרת'],
+   rating:4.95,reviews:143,tags:['צפון','כנרת'],zone:'צפון',match:90,photo:null,isGoogle:false},
+  {id:'s3',title:'קמפוס אחוזת הכרמל',location:'גליל מערבי',emoji:'🏘️',
+   desc:'5 חדרי הורים נפרדים עם בריכה מחוממת.',amen:['5 חד׳ הורים','בריכה'],
+   rating:4.88,reviews:54,tags:['צפון','קמפוס'],zone:'מרכז-צפון',match:90,photo:null,isGoogle:false},
+  {id:'s4',title:'פנטהאוז ים המלח',location:'ים המלח — עין גדי',emoji:'🏔️',
+   desc:'בריכת אינפיניטי עם נוף לים המלח.',amen:['בריכה','3 חד׳'],
+   rating:4.7,reviews:39,tags:['דרום','ים המלח'],zone:'דרום',match:80,photo:null,isGoogle:false},
+  {id:'s5',title:'צימר בוטיק הגולן',location:'גולן — קצרין',emoji:'🌿',
+   desc:'צימר בוטיק עם נוף פנורמי לגולן.',amen:['נוף לגולן','ג׳קוזי'],
+   rating:4.8,reviews:92,tags:['צפון','גולן'],zone:'צפון',match:80,photo:null,isGoogle:false},
+];}
+</script>
+</body>
+</html>
