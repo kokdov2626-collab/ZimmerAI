@@ -271,6 +271,10 @@ h1 .hl{background:linear-gradient(135deg,var(--gold),var(--gold2),#7db3ff);-webk
 // CONFIG
 // ═══════════════════════════════
 const CLAUDE  = '/.netlify/functions/claude';
+const GKEY    = '';  // המפתח נמצא ב-Netlify Environment Variables
+const GPLACES = 'https://maps.googleapis.com/maps/api/place';
+const PAGE_SZ = 24;
+
 // ═══════════════════════════════
 // 28 אזורים — כל ישראל
 // ═══════════════════════════════
@@ -589,7 +593,7 @@ const FBQ = [
 ];
 
 async function callClaude(sys, msgs, tok=400) {
-  const r = await fetch('https://api.anthropic.com/v1/messages', {
+  const r = await fetch('/.netlify/functions/claude', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:tok,system:sys,messages:msgs})
