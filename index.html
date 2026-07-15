@@ -248,7 +248,7 @@ const DATES = [
   {l:'אמצע שבוע',v:'אמצע שבוע'},{l:'קיץ',v:'קיץ'},{l:'פורים',v:'פורים'},{l:'גמיש',v:'גמיש'},
 ];
 
-const SYS = 'אתה עוזר חיפוש צימרים ישראלי. שאל רק מה חסר, שאלה אחת בכל פעם. מה לאסוף: אזור, מועד, לילות, אנשים, תקציב, דרישות. כשאתה שואל על מועד כתוב DATE_PICKER. כשיש 3+ פרטים כתוב סיכום ואז READY. עברית בלבד.';
+const SYS = 'אתה עוזר חיפוש צימרים ישראלי. שאל רק מה חסר, שאלה אחת בכל פעם. עליך לאסוף את כל אלו לפני שתסיים - בלי לדלג: 1) אזור או עיר/יישוב מדויקים (אם המשתמש נקב בשם עיר או יישוב ספציפי, רשום זאת בדיוק כפי שנאמר ואל תכליל אותו לאזור רחב יותר), 2) מועד, 3) מספר לילות, 4) מספר אנשים/הרכב, 5) תקציב מקסימלי בשקלים (חובה לשאול על כך במפורש אם לא נאמר - "עד כמה ש"ח?"), 6) דרישות מיוחדות (בריכה, גקוזי, כשרות וכו׳). כשאתה שואל על מועד כתוב DATE_PICKER. אסור לכתוב READY לפני שיש בידך תשובה מפורשת לגבי תקציב מקסימלי. כשיש את כל 6 הפרטים כתוב סיכום מדויק (כולל שם העיר/היישוב הספציפי אם ניתן, ואת התקציב) ואז READY. עברית בלבד.';
 
 async function callClaude(sys, msgs, tok) {
   try {
@@ -273,7 +273,8 @@ async function startChat() {
   const hasArea = /גליל|כנרת|גולן|ים המלח|אילת|ירושלים|באר שבע|תל אביב|חיפה|צפון|דרום|מרכז|טבריה|צפת|ראש פינה/.test(c);
   const hasDate = /שבת|סוף שבוע|חג|פסח|חנוכה|ראש השנה|סוכות|שבועות|בין הזמנים|קיץ|\d/.test(c);
   const hasPpl = /זוג|משפחה|אנשים|חדרים|ילדים/.test(c);
-  if ([hasArea,hasDate,hasPpl].filter(Boolean).length >= 3) {
+  const hasBudget = /תקציב|₪|עד \d+|\d+\s*-\s*\d+\s*(ש"ח|שקל|₪)?|גמיש/.test(c);
+  if (hasArea && hasDate && hasPpl && hasBudget) {
     addAI('מצוין! יש לי את כל מה שצריך.', null, true);
     document.getElementById('cin').style.display = 'none';
     document.getElementById('cacts').style.display = 'flex';
@@ -343,11 +344,13 @@ function fallback() {
     date: /שבת|סוף שבוע|חג|פסח|חנוכה|בין הזמנים|קיץ|\d/.test(ctx),
     nights: /לילה|לילות|ימים|שבוע/.test(ctx),
     people: /זוג|משפחה|אנשים|חדרים|\d/.test(ctx),
+    budget: /תקציב|₪|עד \d+|\d+\s*-\s*\d+\s*(ש"ח|שקל|₪)?|גמיש/.test(ctx),
   };
-  if (!k.area) { addAI('באיזה אזור?',['גליל','כנרת','גולן','ים המלח','אילת','ירושלים','באר שבע','כל ישראל']); return; }
+  if (!k.area) { addAI('באיזה אזור, עיר או יישוב?',['גליל','כנרת','גולן','ים המלח','אילת','ירושלים','באר שבע','כל ישראל']); return; }
   if (!k.date) { addAI('מתי?'); showDates(); return; }
   if (!k.nights) { addAI('כמה לילות?',['לילה','2 לילות','3 לילות','שבוע']); return; }
   if (!k.people) { addAI('כמה אנשים?',['זוג','משפחה','קבוצת חברים','חדרי הורים נפרדים']); return; }
+  if (!k.budget) { addAI('מה התקציב המקסימלי שלך?',['עד 600','600-1000','1000-1500','גמיש']); return; }
   addAI('מצוין! מוכן לחפש.', null, true);
   document.getElementById('cin').style.display='none';
   document.getElementById('cacts').style.display='flex';
@@ -366,45 +369,134 @@ async function runSearch() {
   document.getElementById('ltxt').textContent='מחפש ומדרג...';
 
   const ctx = chatHistory.map(m=>m.content).join(' ');
+  const cityMatch = detectCity(ctx);
 
-  allProps = ALL_PROPS.map(p => ({...p, match:scoreLocal(p,ctx)}))
+  allProps = ALL_PROPS.map(p => ({...p, match:scoreLocal(p,ctx,cityMatch,true)}))
     .sort((a,b)=>b.match-a.match);
 
-  const relevant = allProps.filter(p=>p.match>20);
+  let relevant = allProps.filter(p=>p.match>20);
+  let relaxNote = '';
+  if (relevant.length === 0) {
+    // אף נכס לא עבר את כל הסינונים המחמירים (יישוב+תקציב+גודל) יחד - מרפים תקציב/גודל
+    // אבל היישוב הספציפי שהמשתמש ביקש (אם ביקש) נשאר סינון קשיח תמיד, כדי לא לחזור לבעיית "תוצאות מהאזור הסובב"
+    allProps = ALL_PROPS.map(p => ({...p, match:scoreLocal(p,ctx,cityMatch,false)}))
+      .sort((a,b)=>b.match-a.match);
+    relevant = allProps.filter(p=>p.match>20);
+    if (relevant.length) relaxNote = 'לא נמצא נכס שעונה על כל הדרישות במדויק (למשל תקציב) - אלו ההתאמות הקרובות ביותר.';
+  }
   document.getElementById('lcount').textContent = relevant.length;
 
   try {
-    const top30 = allProps.slice(0,30);
+    // חשוב: שולחים לדירוג ה-AI רק את המועמדים שכבר עברו את הסינון המדויק (יישוב/תקציב) -
+    // כך ה-AI לא יכול "להחזיר" נכסים מאזור סובב או מעל תקציב, גם אם ידרג אותם גבוה.
+    const top30 = relevant.slice(0,30);
+    if (!top30.length) { finish(cityMatch ? ('לא נמצאו נכסים ב'+cityMatch+' במאגר שלנו.') : 'לא נמצאו נכסים מתאימים.'); return; }
     const list = JSON.stringify(top30.map((p,i)=>({i,title:p.title,area:p.area,desc:p.desc?p.desc.slice(0,60):'',tags:p.tags})));
-    const sys = 'דרג נכסי נופש 0-100. JSON בלבד: {"summary":"...","r":[{"i":number,"s":score,"why":"reason"}]}';
+    const locNote = cityMatch ? ('המשתמש ביקש באופן ספציפי את היישוב "'+cityMatch+'" - כל הנכסים ברשימה כבר משויכים אליו בלבד, דרג ביניהם לפי שאר הדרישות.') : '';
+    const sys = 'דרג נכסי נופש 0-100 לפי מידת ההתאמה המדויקת לבקשה (מיקום, תקציב ודרישות מיוחדות). אל תעלה ציון לנכס שלא עונה במדויק על הבקשה. '+locNote+' JSON בלבד: {"summary":"...","r":[{"i":number,"s":score,"why":"reason"}]}';
     const reply = await callClaude(sys,[{role:'user',content:'Request: '+ctx+'\nProps:\n'+list}],1000);
     if (reply) {
       const parsed = JSON.parse(reply.replace(/```json|```/g,'').trim());
-      parsed.r?.forEach(x=>{ if(allProps[x.i]){allProps[x.i].match=x.s;allProps[x.i].why=x.why;} });
+      parsed.r?.forEach(x=>{ if(top30[x.i]){top30[x.i].match=x.s;top30[x.i].why=x.why;} });
       allProps.sort((a,b)=>b.match-a.match);
-      finish(parsed.summary);
-    } else { finish('מצאתי '+relevant.length+' נכסים מותאמים.'); }
+      finish((relaxNote?relaxNote+' ':'')+(parsed.summary||''));
+    } else { finish((relaxNote?relaxNote+' ':'')+'מצאתי '+relevant.length+' נכסים מותאמים.'); }
   } catch {
-    finish('מצאתי '+relevant.length+' נכסים מותאמים.');
+    finish((relaxNote?relaxNote+' ':'')+'מצאתי '+relevant.length+' נכסים מותאמים.');
   }
 }
 
-function scoreLocal(p, ctx) {
-  let s = 30;
+// מחלץ את שם היישוב הספציפי מתוך שדה area (החלק שאחרי הפסיק האחרון, או השדה כולו אם אין פסיק)
+function extractCity(area) {
+  if (!area) return '';
+  const parts = String(area).split(',');
+  return parts[parts.length-1].trim();
+}
+
+// רשימת אזורים/תיאורים כלליים שלא נחשבים "עיר ספציפית" (כדי לא לסנן לפיהם בטעות)
+const GENERIC_PLACE_WORDS = new Set([
+  'גליל','גליל עליון','גליל תחתון','גולן','רמת הגולן','כנרת','צפון','דרום','מרכז',
+  'ים המלח','ערבה','נגב','שרון','שפלה','ירושלים והסביבה','עמק הירדן','עמק החולה'
+]);
+
+// בונה (פעם אחת, ומקושר ל-cache) את רשימת שמות היישובים הקיימים במאגר בפועל
+function buildCityList() {
+  if (window.__cityList && window.__cityListSrc === ALL_PROPS) return window.__cityList;
+  const set = new Set();
+  ALL_PROPS.forEach(p => {
+    const c = extractCity(p.area);
+    if (c && !GENERIC_PLACE_WORDS.has(c) && c.length >= 2) set.add(c);
+  });
+  window.__cityList = [...set].sort((a,b)=>b.length-a.length); // הכי ספציפי (הכי ארוך) קודם
+  window.__cityListSrc = ALL_PROPS;
+  return window.__cityList;
+}
+
+// עברית: מילות יחס (ב/ל/מ/ו/ה/כ/ש) נדבקות ישירות למילה הבאה בלי רווח (למשל "בטבריה"),
+// לכן צריך לפצל למילים ולנסות גם את המילה כמו שהיא וגם בלי אות-יחס מובילה אחת
+function stripHebPrefix(word) {
+  const variants = new Set([word]);
+  const prefixLetters = 'בלכמושה';
+  if (word.length > 2 && prefixLetters.includes(word[0])) {
+    variants.add(word.slice(1));
+    if (word.length > 3 && prefixLetters.includes(word[1])) variants.add(word.slice(2));
+  }
+  return [...variants];
+}
+
+// בודק האם המשתמש ציין שם יישוב ספציפי בטקסט הבקשה (תומך בשמות יישוב של עד 3 מילים, ובתחיליות עברית)
+function detectCity(ctx) {
+  const cities = buildCityList();
+  if (!cities.length) return '';
+  const citySet = new Set(cities);
+  const tokens = ctx.match(/[\u05D0-\u05EA]+/g) || [];
+  for (let len = Math.min(3, tokens.length); len >= 1; len--) {
+    for (let i = 0; i + len <= tokens.length; i++) {
+      const rest = tokens.slice(i + 1, i + len);
+      for (const first of stripHebPrefix(tokens[i])) {
+        const candidate = [first, ...rest].join(' ');
+        if (citySet.has(candidate)) return candidate;
+      }
+    }
+  }
+  return '';
+}
+
+// מנסה לחלץ קיבולת (כמות אנשים) מהתיאור, כדי לזהות נכסים גדולים מדי לבקשת "זוגי"
+function extractCapacity(desc) {
+  if (!desc) return null;
+  let m = desc.match(/עד\s*(\d{1,3})\s*(איש|אנשים|נפשות|אורחים)/);
+  if (m) return parseInt(m[1]);
+  m = desc.match(/ל-?\s*(\d{1,3})\s*(איש|אנשים|נפשות|אורחים)/);
+  if (m) return parseInt(m[1]);
+  return null;
+}
+
+function scoreLocal(p, ctx, cityMatch, strict) {
+  if (strict === undefined) strict = true;
+  const area = (p.area||'');
+  // אם המשתמש ביקש יישוב ספציפי - זהו סינון קשיח שתמיד נשאר, גם ב"הרפיה": רק נכסים מאותו יישוב בדיוק
+  if (cityMatch) {
+    if (!area.includes(cityMatch) && !(p.tags||[]).includes(cityMatch)) return 0;
+  }
+  let s = cityMatch ? 55 : 30;
   const q = ctx.toLowerCase();
-  const area = (p.area||'').toLowerCase();
+  const areaL = area.toLowerCase();
   const title = (p.title||'').toLowerCase();
   const desc = (p.desc||'').toLowerCase();
   const tags = (p.tags||[]).join(' ').toLowerCase();
 
-  if (/גליל/.test(q) && /גליל/.test(area)) s+=35;
-  if (/כנרת|טבריה/.test(q) && /כנרת|טבריה/.test(area)) s+=35;
-  if (/גולן/.test(q) && /גולן/.test(area)) s+=35;
-  if (/ים המלח/.test(q) && /ים המלח/.test(area)) s+=35;
-  if (/אילת/.test(q) && /אילת/.test(area)) s+=35;
-  if (/ירושלים/.test(q) && /ירושלים/.test(area)) s+=35;
-  if (/באר שבע/.test(q) && /באר שבע/.test(area)) s+=35;
-  if (/צפת/.test(q) && /צפת/.test(area)) s+=35;
+  if (!cityMatch) {
+    if (/גליל/.test(q) && /גליל/.test(areaL)) s+=35;
+    if (/כנרת/.test(q) && /כנרת/.test(areaL)) s+=35;
+    if (/טבריה/.test(q) && /טבריה/.test(areaL)) s+=35;
+    if (/גולן/.test(q) && /גולן/.test(areaL)) s+=35;
+    if (/ים המלח/.test(q) && /ים המלח/.test(areaL)) s+=35;
+    if (/אילת/.test(q) && /אילת/.test(areaL)) s+=35;
+    if (/ירושלים/.test(q) && /ירושלים/.test(areaL)) s+=35;
+    if (/באר שבע/.test(q) && /באר שבע/.test(areaL)) s+=35;
+    if (/צפת/.test(q) && /צפת/.test(areaL)) s+=35;
+  }
   if (/בריכה/.test(q) && /בריכה/.test(tags+desc)) s+=20;
   if (/קוזי/.test(q) && /קוזי/.test(tags+desc+title)) s+=20;
   if (/ספא/.test(q) && /ספא/.test(tags+desc)) s+=10;
@@ -412,16 +504,34 @@ function scoreLocal(p, ctx) {
   if (/וילה/.test(q) && /וילה/.test(tags+title)) s+=15;
   if (/קמפוס|חדרי הורים/.test(q) && /קמפוס/.test(tags+title)) s+=30;
   if (/סאונה/.test(q) && /סאונה/.test(tags+desc)) s+=15;
-  if (/זוג|רומנטי/.test(q) && /זוג|רומנטי/.test(tags+desc)) s+=10;
+  if (/זוג|רומנטי/.test(q) && !/משפח|קבוצ|חברים|אירוע/.test(q)) {
+    // בקשה לזוג בלבד (לא משפחה/קבוצה): נכס גדול מדי (וילה/קמפוס לעשרות אנשים) פחות מתאים
+    const cap = extractCapacity(p.desc);
+    if (cap && cap >= 10) { if (strict) return 0; else s -= 45; }
+    else if (cap && cap >= 7) s -= 30;
+    if (/משפחה/.test(tags) && !/זוגות/.test(tags)) s -= 15;
+    if (/זוגות/.test(tags) || /רומנטי/.test(tags+desc)) s += 20;
+  }
   if (/משפח/.test(q) && /משפח/.test(tags+desc)) s+=10;
   if (/צפון/.test(q) && /צפון|גליל|כנרת|גולן/.test(tags)) s+=15;
   if (/דרום/.test(q) && /דרום|אילת|נגב|ים המלח/.test(tags)) s+=15;
-  const pwMatch = q.match(/עד (\d+)/);
+  const pw = parseInt((p.priceWeekend||p.priceWeek||'').replace(/[^\d]/g,''));
+  const pwMatch = q.match(/עד\s*(\d+)/);
+  const rangeMatch = q.match(/(\d{3,5})\s*-\s*(\d{3,5})/);
   if (pwMatch) {
     const budget = parseInt(pwMatch[1]);
-    const pw = parseInt((p.priceWeekend||'').replace(/[^\d]/g,''));
-    if (pw && pw <= budget) s+=15;
-    else if (pw && pw > budget*1.5) s-=10;
+    if (pw) {
+      if (pw <= budget) s += 20;
+      else if (pw > budget * 1.25) { if (strict) return 0; else s -= 45; }
+      else s -= 15;
+    }
+  } else if (rangeMatch) {
+    const lo = parseInt(rangeMatch[1]), hi = parseInt(rangeMatch[2]);
+    if (pw) {
+      if (pw >= lo * 0.8 && pw <= hi * 1.15) s += 15;
+      else if (pw > hi * 1.5) { if (strict) return 0; else s -= 45; }
+      else s -= 10;
+    }
   }
   return Math.max(0, Math.min(99, s));
 }
