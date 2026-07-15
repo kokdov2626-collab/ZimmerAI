@@ -650,6 +650,7 @@ function applyCardImage(cardEl, url) {
   if (!ph || ph.querySelector('img')) return;
   const img = new Image();
   img.loading = 'lazy';
+  img.referrerPolicy = 'no-referrer';
   img.onload = () => ph.appendChild(img);
   img.onerror = () => {}; // האיור נשאר כפי שהוא אם התמונה לא נטענת
   img.src = url;
