@@ -648,12 +648,12 @@ function applyCardImage(cardEl, url) {
   if (!url || !cardEl.isConnected) return;
   const ph = cardEl.querySelector('.cph');
   if (!ph || ph.querySelector('img')) return;
+  const proxied = '/.netlify/functions/proxy-image?url=' + encodeURIComponent(url);
   const img = new Image();
   img.loading = 'lazy';
-  img.referrerPolicy = 'no-referrer';
   img.onload = () => ph.appendChild(img);
   img.onerror = () => {}; // האיור נשאר כפי שהוא אם התמונה לא נטענת
-  img.src = url;
+  img.src = proxied;
 }
 
 function addU(t){const w=document.getElementById('cwin');const d=document.createElement('div');d.className='muser';d.innerHTML='<div class="ubub">'+esc(t)+'</div>';w.appendChild(d);scrollW();}
