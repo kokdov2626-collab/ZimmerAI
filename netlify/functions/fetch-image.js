@@ -13,12 +13,17 @@ function extractImage(html) {
 
   if (!/<\/head>/i.test(html)) return null; // עדיין לא הגענו לגוף העמוד - אין טעם לחפש כבר
 
-  const imgs = html.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/gi);
+  const imgs = html.match(/<img[^>]+>/gi);
   if (!imgs) return null;
   for (const tag of imgs) {
-    const srcMatch = tag.match(/src=["']([^"']+)["']/i);
-    if (!srcMatch) continue;
-    const src = srcMatch[1];
+    // סדר עדיפות: אתרים רבים טוענים תמונות באיחור (lazy load) ומשאירים ב-src רק
+    // placeholder ריק, בעוד הכתובת האמיתית יושבת ב-data-src וכדומה
+    const attrMatch = tag.match(/data-src=["']([^"']+)["']/i)
+      || tag.match(/data-lazy-src=["']([^"']+)["']/i)
+      || tag.match(/data-original=["']([^"']+)["']/i)
+      || tag.match(/\bsrc=["']([^"']+)["']/i);
+    if (!attrMatch) continue;
+    const src = attrMatch[1];
     if (!/^https?:\/\//i.test(src)) continue; // מתעלמים מנתיבים יחסיים, פשוט יותר ובטוח יותר
     if (!/\.(jpg|jpeg|png|webp)(\?|$)/i.test(src)) continue;
     if (/logo|icon|sprite|pixel|blank|favicon|1x1|loader|placeholder|doubleclick|googletagmanager|star\.png|phone1?\.png/i.test(src)) continue;
