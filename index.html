@@ -632,28 +632,47 @@ function renderCards(props) {
 // מנסה למשוך תמונה אמיתית של הנכס מהעמוד המקורי שלו (og:image), ומחליף את האיור אם נמצאה
 const __imgCache = new Map();
 async function loadCardImage(cardEl, p) {
+  dbgLog('loadCardImage: ' + (p.link || 'אין link'));
   if (!p.link) return;
   if (__imgCache.has(p.link)) {
+    dbgLog('מטמון קיים: ' + (__imgCache.get(p.link) ? 'יש כתובת' : 'null'));
     applyCardImage(cardEl, __imgCache.get(p.link));
     return;
   }
   try {
     const r = await fetch('/.netlify/functions/fetch-image?url=' + encodeURIComponent(p.link));
     const d = await r.json();
+    dbgLog('תשובת fetch-image: ' + (d.image ? 'יש תמונה' : 'null'));
     __imgCache.set(p.link, d.image || null);
     if (d.image) applyCardImage(cardEl, d.image);
-  } catch (e) { /* נשאר האיור כברירת מחדל */ }
+  } catch (e) { dbgLog('שגיאת fetch: ' + e.message); }
 }
 function applyCardImage(cardEl, url) {
-  if (!url || !cardEl.isConnected) return;
+  if (!url) { dbgLog('applyCardImage: url ריק'); return; }
+  if (!cardEl.isConnected) { dbgLog('applyCardImage: הכרטיס לא מחובר ל-DOM!'); return; }
   const ph = cardEl.querySelector('.cph');
-  if (!ph || ph.querySelector('img')) return;
+  if (!ph) { dbgLog('applyCardImage: לא נמצא cph'); return; }
+  if (ph.querySelector('img')) { dbgLog('applyCardImage: כבר יש img'); return; }
   const proxied = '/.netlify/functions/proxy-image?url=' + encodeURIComponent(url);
   const img = new Image();
   img.loading = 'lazy';
-  img.onload = () => ph.appendChild(img);
-  img.onerror = () => {}; // האיור נשאר כפי שהוא אם התמונה לא נטענת
+  img.onload = () => { dbgLog('תמונה נטענה בהצלחה!'); ph.appendChild(img); };
+  img.onerror = () => dbgLog('תמונה נכשלה בטעינה (proxy)');
   img.src = proxied;
+  dbgLog('img.src נקבע, ממתין לטעינה...');
+}
+function dbgLog(msg) {
+  let box = document.getElementById('dbgbox');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'dbgbox';
+    box.style.cssText = 'position:fixed;bottom:0;left:0;right:0;max-height:35vh;overflow-y:auto;background:rgba(0,0,0,0.92);color:#0f0;font:11px monospace;padding:8px;z-index:99999;direction:ltr;text-align:left;';
+    document.body.appendChild(box);
+  }
+  const line = document.createElement('div');
+  line.textContent = new Date().toLocaleTimeString() + ' | ' + msg;
+  box.appendChild(line);
+  box.scrollTop = box.scrollHeight;
 }
 
 function addU(t){const w=document.getElementById('cwin');const d=document.createElement('div');d.className='muser';d.innerHTML='<div class="ubub">'+esc(t)+'</div>';w.appendChild(d);scrollW();}
