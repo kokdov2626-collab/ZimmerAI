@@ -665,6 +665,7 @@ async function loadCardImage(cardEl, p) {
     if (d.image) await applyCardImage(cardEl, d.image);
   } catch (e) { dbgLog('שגיאת fetch: ' + e.message); }
 }
+const __pendingImages = new Set(); // מחזיק הפניה חיה לתמונות בטעינה, כדי שה-GC לא "יזרוק" אותן באמצע
 function applyCardImage(cardEl, url) {
   return new Promise((resolve) => {
     if (!url) { dbgLog('applyCardImage: url ריק'); return resolve(); }
@@ -674,9 +675,10 @@ function applyCardImage(cardEl, url) {
     if (ph.querySelector('img')) { dbgLog('applyCardImage: כבר יש img'); return resolve(); }
     const proxied = '/.netlify/functions/proxy-image?url=' + encodeURIComponent(url);
     const img = new Image();
+    __pendingImages.add(img);
     img.loading = 'lazy';
     let settled = false;
-    const done = () => { if (!settled) { settled = true; resolve(); } };
+    const done = () => { if (!settled) { settled = true; __pendingImages.delete(img); resolve(); } };
     img.onload = () => { dbgLog('תמונה נטענה בהצלחה!'); ph.appendChild(img); done(); };
     img.onerror = () => { dbgLog('תמונה נכשלה בטעינה (proxy)'); done(); };
     setTimeout(() => { if (!settled) dbgLog('תמונה - timeout אחרי 12 שניות'); done(); }, 12000);
@@ -708,3 +710,4 @@ function resetAll(){chatHistory=[];allProps=[];curResults=[];dispPage=0;document
 </script>
 </body>
 </html>
+
