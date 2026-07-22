@@ -92,8 +92,7 @@ h1 span{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-back
 .card:hover{transform:translateY(-2px);border-color:var(--border2);}
 .card.top{border-color:rgba(201,168,76,.35);}
 .card.top::before{content:'AI';position:absolute;top:10px;right:10px;z-index:2;background:rgba(201,168,76,.92);color:#0a0f1e;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
-.cph{width:100%;height:130px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:linear-gradient(135deg,var(--bg3),var(--bg2));position:relative;overflow:hidden;}
-.cph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.cph{width:100%;height:130px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:linear-gradient(135deg,var(--bg3),var(--bg2));}
 .cbody{padding:.9rem;}
 .cloc{font-size:11px;color:var(--gold);font-weight:600;text-transform:uppercase;margin-bottom:3px;}
 .ctit{font-size:15px;font-weight:700;margin-bottom:6px;line-height:1.3;}
@@ -625,79 +624,7 @@ function renderCards(props) {
       +'</div></div>';
     grid.appendChild(c);
     setTimeout(()=>{const f=c.querySelector('.mfill');if(f)f.style.width=p.match+'%';},80*idx);
-    queueCardImage(c,p);
   });
-}
-
-// מנסה למשוך תמונה אמיתית של הנכס מהעמוד המקורי שלו (og:image), ומחליף את האיור אם נמצאה
-const __imgCache = new Map();
-// תור עם הגבלת מקביליות - כדי לא לשלוח 24+ בקשות בו-זמנית ולהעמיס יותר מדי על הפונקציות בשרת
-const __imgQueue = [];
-let __imgActive = 0;
-const __imgConcurrency = 4;
-function queueCardImage(cardEl, p) {
-  __imgQueue.push({ cardEl, p });
-  __pumpImgQueue();
-}
-function __pumpImgQueue() {
-  while (__imgActive < __imgConcurrency && __imgQueue.length) {
-    const { cardEl, p } = __imgQueue.shift();
-    __imgActive++;
-    loadCardImage(cardEl, p).finally(() => {
-      __imgActive--;
-      __pumpImgQueue();
-    });
-  }
-}
-async function loadCardImage(cardEl, p) {
-  dbgLog('loadCardImage: ' + (p.link || 'אין link'));
-  if (!p.link) return;
-  if (__imgCache.has(p.link)) {
-    dbgLog('מטמון קיים: ' + (__imgCache.get(p.link) ? 'יש כתובת' : 'null'));
-    applyCardImage(cardEl, __imgCache.get(p.link));
-    return;
-  }
-  try {
-    const r = await fetch('/.netlify/functions/fetch-image?url=' + encodeURIComponent(p.link));
-    const d = await r.json();
-    dbgLog('תשובת fetch-image: ' + (d.image ? 'יש תמונה' : 'null'));
-    __imgCache.set(p.link, d.image || null);
-    if (d.image) await applyCardImage(cardEl, d.image);
-  } catch (e) { dbgLog('שגיאת fetch: ' + e.message); }
-}
-const __pendingImages = new Set(); // מחזיק הפניה חיה לתמונות בטעינה, כדי שה-GC לא "יזרוק" אותן באמצע
-function applyCardImage(cardEl, url) {
-  return new Promise((resolve) => {
-    if (!url) { dbgLog('applyCardImage: url ריק'); return resolve(); }
-    if (!cardEl.isConnected) { dbgLog('applyCardImage: הכרטיס לא מחובר ל-DOM!'); return resolve(); }
-    const ph = cardEl.querySelector('.cph');
-    if (!ph) { dbgLog('applyCardImage: לא נמצא cph'); return resolve(); }
-    if (ph.querySelector('img')) { dbgLog('applyCardImage: כבר יש img'); return resolve(); }
-    const proxied = '/.netlify/functions/proxy-image?url=' + encodeURIComponent(url);
-    const img = new Image();
-    __pendingImages.add(img);
-    img.loading = 'lazy';
-    let settled = false;
-    const done = () => { if (!settled) { settled = true; __pendingImages.delete(img); resolve(); } };
-    img.onload = () => { dbgLog('תמונה נטענה בהצלחה!'); ph.appendChild(img); done(); };
-    img.onerror = () => { dbgLog('תמונה נכשלה בטעינה (proxy)'); done(); };
-    setTimeout(() => { if (!settled) dbgLog('תמונה - timeout אחרי 12 שניות'); done(); }, 12000);
-    img.src = proxied;
-    dbgLog('img.src נקבע, ממתין לטעינה...');
-  });
-}
-function dbgLog(msg) {
-  let box = document.getElementById('dbgbox');
-  if (!box) {
-    box = document.createElement('div');
-    box.id = 'dbgbox';
-    box.style.cssText = 'position:fixed;bottom:0;left:0;right:0;max-height:35vh;overflow-y:auto;background:rgba(0,0,0,0.92);color:#0f0;font:11px monospace;padding:8px;z-index:99999;direction:ltr;text-align:left;';
-    document.body.appendChild(box);
-  }
-  const line = document.createElement('div');
-  line.textContent = new Date().toLocaleTimeString() + ' | ' + msg;
-  box.appendChild(line);
-  box.scrollTop = box.scrollHeight;
 }
 
 function addU(t){const w=document.getElementById('cwin');const d=document.createElement('div');d.className='muser';d.innerHTML='<div class="ubub">'+esc(t)+'</div>';w.appendChild(d);scrollW();}
@@ -710,4 +637,3 @@ function resetAll(){chatHistory=[];allProps=[];curResults=[];dispPage=0;document
 </script>
 </body>
 </html>
-
