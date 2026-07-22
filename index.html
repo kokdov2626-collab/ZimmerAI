@@ -625,12 +625,30 @@ function renderCards(props) {
       +'</div></div>';
     grid.appendChild(c);
     setTimeout(()=>{const f=c.querySelector('.mfill');if(f)f.style.width=p.match+'%';},80*idx);
-    loadCardImage(c,p);
+    queueCardImage(c,p);
   });
 }
 
 // מנסה למשוך תמונה אמיתית של הנכס מהעמוד המקורי שלו (og:image), ומחליף את האיור אם נמצאה
 const __imgCache = new Map();
+// תור עם הגבלת מקביליות - כדי לא לשלוח 24+ בקשות בו-זמנית ולהעמיס יותר מדי על הפונקציות בשרת
+const __imgQueue = [];
+let __imgActive = 0;
+const __imgConcurrency = 4;
+function queueCardImage(cardEl, p) {
+  __imgQueue.push({ cardEl, p });
+  __pumpImgQueue();
+}
+function __pumpImgQueue() {
+  while (__imgActive < __imgConcurrency && __imgQueue.length) {
+    const { cardEl, p } = __imgQueue.shift();
+    __imgActive++;
+    loadCardImage(cardEl, p).finally(() => {
+      __imgActive--;
+      __pumpImgQueue();
+    });
+  }
+}
 async function loadCardImage(cardEl, p) {
   dbgLog('loadCardImage: ' + (p.link || 'אין link'));
   if (!p.link) return;
@@ -644,22 +662,27 @@ async function loadCardImage(cardEl, p) {
     const d = await r.json();
     dbgLog('תשובת fetch-image: ' + (d.image ? 'יש תמונה' : 'null'));
     __imgCache.set(p.link, d.image || null);
-    if (d.image) applyCardImage(cardEl, d.image);
+    if (d.image) await applyCardImage(cardEl, d.image);
   } catch (e) { dbgLog('שגיאת fetch: ' + e.message); }
 }
 function applyCardImage(cardEl, url) {
-  if (!url) { dbgLog('applyCardImage: url ריק'); return; }
-  if (!cardEl.isConnected) { dbgLog('applyCardImage: הכרטיס לא מחובר ל-DOM!'); return; }
-  const ph = cardEl.querySelector('.cph');
-  if (!ph) { dbgLog('applyCardImage: לא נמצא cph'); return; }
-  if (ph.querySelector('img')) { dbgLog('applyCardImage: כבר יש img'); return; }
-  const proxied = '/.netlify/functions/proxy-image?url=' + encodeURIComponent(url);
-  const img = new Image();
-  img.loading = 'lazy';
-  img.onload = () => { dbgLog('תמונה נטענה בהצלחה!'); ph.appendChild(img); };
-  img.onerror = () => dbgLog('תמונה נכשלה בטעינה (proxy)');
-  img.src = proxied;
-  dbgLog('img.src נקבע, ממתין לטעינה...');
+  return new Promise((resolve) => {
+    if (!url) { dbgLog('applyCardImage: url ריק'); return resolve(); }
+    if (!cardEl.isConnected) { dbgLog('applyCardImage: הכרטיס לא מחובר ל-DOM!'); return resolve(); }
+    const ph = cardEl.querySelector('.cph');
+    if (!ph) { dbgLog('applyCardImage: לא נמצא cph'); return resolve(); }
+    if (ph.querySelector('img')) { dbgLog('applyCardImage: כבר יש img'); return resolve(); }
+    const proxied = '/.netlify/functions/proxy-image?url=' + encodeURIComponent(url);
+    const img = new Image();
+    img.loading = 'lazy';
+    let settled = false;
+    const done = () => { if (!settled) { settled = true; resolve(); } };
+    img.onload = () => { dbgLog('תמונה נטענה בהצלחה!'); ph.appendChild(img); done(); };
+    img.onerror = () => { dbgLog('תמונה נכשלה בטעינה (proxy)'); done(); };
+    setTimeout(() => { if (!settled) dbgLog('תמונה - timeout אחרי 12 שניות'); done(); }, 12000);
+    img.src = proxied;
+    dbgLog('img.src נקבע, ממתין לטעינה...');
+  });
 }
 function dbgLog(msg) {
   let box = document.getElementById('dbgbox');
