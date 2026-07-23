@@ -248,7 +248,7 @@ const DATES = [
   {l:'אמצע שבוע',v:'אמצע שבוע'},{l:'קיץ',v:'קיץ'},{l:'פורים',v:'פורים'},{l:'גמיש',v:'גמיש'},
 ];
 
-const SYS = 'אתה עוזר חיפוש צימרים ישראלי. שאל רק מה חסר, שאלה אחת בכל פעם. עליך לאסוף את כל אלו לפני שתסיים - בלי לדלג: 1) אזור או עיר/יישוב מדויקים (אם המשתמש נקב בשם עיר או יישוב ספציפי, רשום זאת בדיוק כפי שנאמר ואל תכליל אותו לאזור רחב יותר), 2) מועד, 3) מספר לילות, 4) מספר אנשים/הרכב, 5) תקציב מקסימלי בשקלים (חובה לשאול על כך במפורש אם לא נאמר - "עד כמה ש"ח?"), 6) דרישות מיוחדות (בריכה, גקוזי, כשרות וכו׳). כשאתה שואל על מועד כתוב DATE_PICKER. אסור לכתוב READY לפני שיש בידך תשובה מפורשת לגבי תקציב מקסימלי. כשיש את כל 6 הפרטים כתוב סיכום מדויק (כולל שם העיר/היישוב הספציפי אם ניתן, ואת התקציב) ואז READY. עברית בלבד.';
+const SYS = 'אתה עוזר חיפוש צימרים ישראלי. שאל רק מה חסר, שאלה אחת בכל פעם. עליך לאסוף את כל אלו לפני שתסיים - בלי לדלג: 1) אזור או עיר/יישוב מדויקים (אם המשתמש נקב בשם עיר או יישוב ספציפי, רשום זאת בדיוק כפי שנאמר ואל תכליל אותו לאזור רחב יותר), 2) מועד, 3) מספר לילות, 4) מספר אנשים/הרכב, 5) תקציב מקסימלי בשקלים (חובה לשאול על כך במפורש אם לא נאמר - "עד כמה ש"ח?"), 6) דרישות מיוחדות. לכל דרישה מיוחדת שהמשתמש מזכיר (בריכה, גקוזי, כשרות וכו׳) שאל ברמת חשיבות ולא רק כן/לא: "[הדרישה] - חובה, עדיף שיהיה, או לא קריטי?". דוגמה: לגבי בריכה שאל "בריכה - חובה, עדיף שיהיה, או לא צריך?", ואם עונה חובה/עדיף, שאל מיד המשך: "גודל הבריכה חשוב? משנה מאוד (רוצה בריכה גדולה), לא משמעותי, או גם קטנה מתאימה". אותו דבר לגקוזי - אם רלוונטי, שאל המשך: "גקוזי פרטי חשוב, או גם משותף בסדר?". שאל גם (פעם אחת, כחלק מהדרישות המיוחדות): "מעדיפים יחידה פרטית ומבודדת, או גם בסדר מתחם עם עוד יחידות בסביבה?". אם האזור כנרת/גליל וניכר שנוף חשוב, שאל: "נוף לכנרת דווקא חשוב, או נוף כללי מספיק?". אם צוינו ילדים/משפחה, שאל: "חשובים מתקני משחק לילדים (כמו טרמפולינה)?". כשאתה שואל על מועד כתוב DATE_PICKER. אסור לכתוב READY לפני שיש בידך תשובה מפורשת לגבי תקציב מקסימלי. כשיש את כל הפרטים כתוב סיכום מדויק (כולל שם העיר/היישוב הספציפי אם ניתן, התקציב, ורמת החשיבות של כל דרישה מיוחדת) ואז READY. עברית בלבד.';
 
 async function callClaude(sys, msgs, tok) {
   try {
@@ -270,7 +270,7 @@ async function startChat() {
   chatHistory.push({role:'user',content:v});
   addU(v);
   const c = v.toLowerCase();
-  const hasArea = /גליל|כנרת|גולן|ים המלח|אילת|ירושלים|באר שבע|תל אביב|חיפה|צפון|דרום|מרכז|טבריה|צפת|ראש פינה/.test(c);
+  const hasArea = /גליל|כנרת|גולן|ים המלח|אילת|ירושלים|באר שבע|תל אביב|חיפה|צפון|דרום|מרכז|טבריה|צפת|ראש פינה/.test(c) || !!detectCity(c);
   const hasDate = /שבת|סוף שבוע|חג|פסח|חנוכה|ראש השנה|סוכות|שבועות|בין הזמנים|קיץ|\d/.test(c);
   const hasPpl = /זוג|משפחה|אנשים|חדרים|ילדים/.test(c);
   const hasBudget = /תקציב|₪|עד \d+|\d+\s*-\s*\d+\s*(ש"ח|שקל|₪)?|גמיש/.test(c);
@@ -320,7 +320,15 @@ function detectQR(t) {
   if (/אנשים|הרכב/.test(t)) return ['זוג','משפחה עם ילדים','קבוצת חברים','חדרי הורים נפרדים'];
   if (/אזור|עיר/.test(t)) return ['גליל','כנרת','גולן','ים המלח','אילת','ירושלים','באר שבע','כל ישראל'];
   if (/תקציב|מחיר/.test(t)) return ['עד 600','600-1000','1000-1500','גמיש'];
-  if (/דרישות/.test(t)) return ['בריכה','גקוזי','כשרות','חיות מחמד','ללא'];
+  if (/דרישות/.test(t)) return ['בריכה','גקוזי','כשרות','מתאים לכלבים','ללא'];
+  if (/בריכה.*(חובה|עדיף|קריטי)/.test(t)) return ['חובה','עדיף שיהיה','לא צריך'];
+  if (/גודל הבריכה/.test(t)) return ['משנה מאוד - גדולה','לא משמעותי','גם קטנה מתאימה'];
+  if (/בריכה פרטית|בריכה מחוממת|סוג בריכה/.test(t)) return ['פרטית','מחוממת','שניהם חשובים','לא משנה'];
+  if (/גקוזי.*(חובה|עדיף|קריטי)/.test(t)) return ['חובה','עדיף שיהיה','לא צריך'];
+  if (/גקוזי פרטי/.test(t)) return ['פרטי חשוב','גם משותף בסדר'];
+  if (/יחידה פרטית ומבודדת|מתחם עם עוד יחידות/.test(t)) return ['יחידה פרטית ומבודדת','מתחם בסדר גם','לא משנה'];
+  if (/נוף לכנרת/.test(t)) return ['נוף לכנרת חשוב','נוף כללי מספיק'];
+  if (/מתקני משחק לילדים|טרמפולינה/.test(t)) return ['כן חשוב','לא קריטי'];
   return null;
 }
 
@@ -340,7 +348,7 @@ function pickDate(v) {
 function fallback() {
   const ctx = chatHistory.map(m=>m.content).join(' ').toLowerCase();
   const k = {
-    area: /גליל|כנרת|גולן|ים המלח|אילת|ירושלים|באר שבע|חיפה|צפת|טבריה|צפון|דרום|מרכז/.test(ctx),
+    area: /גליל|כנרת|גולן|ים המלח|אילת|ירושלים|באר שבע|חיפה|צפת|טבריה|צפון|דרום|מרכז/.test(ctx) || !!detectCity(ctx),
     date: /שבת|סוף שבוע|חג|פסח|חנוכה|בין הזמנים|קיץ|\d/.test(ctx),
     nights: /לילה|לילות|ימים|שבוע/.test(ctx),
     people: /זוג|משפחה|אנשים|חדרים|\d/.test(ctx),
@@ -369,9 +377,10 @@ async function runSearch() {
   document.getElementById('ltxt').textContent='מחפש ומדרג...';
 
   const ctx = chatHistory.map(m=>m.content).join(' ');
+  const userCtx = chatHistory.filter(m=>m.role==='user').map(m=>m.content).join(' ');
   const cityMatch = detectCity(ctx);
 
-  allProps = ALL_PROPS.map(p => ({...p, match:scoreLocal(p,ctx,cityMatch,true)}))
+  allProps = ALL_PROPS.map(p => ({...p, match:scoreLocal(p,ctx,cityMatch,true,userCtx)}))
     .sort((a,b)=>b.match-a.match);
 
   let relevant = allProps.filter(p=>p.match>20);
@@ -379,7 +388,7 @@ async function runSearch() {
   if (relevant.length === 0) {
     // אף נכס לא עבר את כל הסינונים המחמירים (יישוב+תקציב+גודל) יחד - מרפים תקציב/גודל
     // אבל היישוב הספציפי שהמשתמש ביקש (אם ביקש) נשאר סינון קשיח תמיד, כדי לא לחזור לבעיית "תוצאות מהאזור הסובב"
-    allProps = ALL_PROPS.map(p => ({...p, match:scoreLocal(p,ctx,cityMatch,false)}))
+    allProps = ALL_PROPS.map(p => ({...p, match:scoreLocal(p,ctx,cityMatch,false,userCtx)}))
       .sort((a,b)=>b.match-a.match);
     relevant = allProps.filter(p=>p.match>20);
     if (relevant.length) relaxNote = 'לא נמצא נכס שעונה על כל הדרישות במדויק (למשל תקציב) - אלו ההתאמות הקרובות ביותר.';
@@ -416,7 +425,10 @@ function extractCity(area) {
 // רשימת אזורים/תיאורים כלליים שלא נחשבים "עיר ספציפית" (כדי לא לסנן לפיהם בטעות)
 const GENERIC_PLACE_WORDS = new Set([
   'גליל','גליל עליון','גליל תחתון','גולן','רמת הגולן','כנרת','צפון','דרום','מרכז',
-  'ים המלח','ערבה','נגב','שרון','שפלה','ירושלים והסביבה','עמק הירדן','עמק החולה'
+  'ים המלח','ערבה','נגב','שרון','שפלה','ירושלים והסביבה','עמק הירדן','עמק החולה',
+  // מילות-סוג יישוב כלליות - לפעמים מגיעות לבד בגלל נתוני area פגומים (למשל "חזון, מושב" במקום "מושב חזון") -
+  // בלי הסינון הזה, מילה כללית כזו עלולה להיחשב בטעות כשם יישוב ספציפי
+  'מושב','כפר','קיבוץ','מושבה','יישוב','שכונה','אזור','עיר','כניסה','ישוב'
 ]);
 
 // בונה (פעם אחת, ומקושר ל-cache) את רשימת שמות היישובים הקיימים במאגר בפועל
@@ -472,7 +484,8 @@ function extractCapacity(desc) {
   return null;
 }
 
-function scoreLocal(p, ctx, cityMatch, strict) {
+function scoreLocal(p, ctx, cityMatch, strict, userCtx) {
+  if (userCtx === undefined) userCtx = ctx;
   if (strict === undefined) strict = true;
   const area = (p.area||'');
   // אם המשתמש ביקש יישוב ספציפי - זהו סינון קשיח שתמיד נשאר, גם ב"הרפיה": רק נכסים מאותו יישוב בדיוק
@@ -497,8 +510,51 @@ function scoreLocal(p, ctx, cityMatch, strict) {
     if (/באר שבע/.test(q) && /באר שבע/.test(areaL)) s+=35;
     if (/צפת/.test(q) && /צפת/.test(areaL)) s+=35;
   }
-  if (/בריכה/.test(q) && /בריכה/.test(tags+desc)) s+=20;
-  if (/קוזי/.test(q) && /קוזי/.test(tags+desc+title)) s+=20;
+  const hasPool = /בריכה/.test(tags+desc);
+  const poolMandatory = /חובה/.test(userCtx);
+  const poolPreferred = /עדיף שיהיה/.test(userCtx);
+  const poolNotNeeded = /לא צריך|לא קריטי/.test(userCtx);
+  if (/בריכה/.test(q) && !poolNotNeeded) {
+    if (hasPool) {
+      s += 20;
+      const poolSizeMatters = /משנה מאוד|רוצה בריכה גדולה/.test(userCtx);
+      if (poolSizeMatters && /(גדולה|ענקית|ענק)/.test(desc)) s += 15;
+      // אם לא מוזכר גודל בתיאור - לא מענישים, פשוט אין בונוס נוסף (אין לנו מידע ברור)
+    } else {
+      if (poolMandatory) { if (strict) return 0; else s -= 45; }
+      else if (poolPreferred) s -= 20;
+    }
+  }
+  if (/בריכה פרטית/.test(q)) {
+    if (/בריכה פרטית/.test(desc)) s+=15;
+    else if (/בריכה משותפת/.test(desc)) s-=15;
+  }
+  if (/מחוממת/.test(q) && /מחוממת/.test(desc)) s+=10;
+  const hasJacuzzi = /קוזי/.test(tags+desc+title);
+  const jacuzziMandatory = /חובה/.test(userCtx);
+  const jacuzziPreferred = /עדיף שיהיה/.test(userCtx);
+  const jacuzziNotNeeded = /לא צריך|לא קריטי/.test(userCtx);
+  if (/קוזי/.test(q) && !jacuzziNotNeeded) {
+    if (hasJacuzzi) {
+      s += 20;
+      if (/פרטי חשוב/.test(userCtx) && /קוזי פרטי|ג'?קוזי פרטי/.test(desc)) s += 15;
+    } else {
+      if (jacuzziMandatory) { if (strict) return 0; else s -= 45; }
+      else if (jacuzziPreferred) s -= 20;
+    }
+  }
+  if (/יחידה פרטית ומבודדת/.test(userCtx)) {
+    if (/יחידה פרטית|יחידה נפרדת|מבודד/.test(desc)) s += 15;
+    else if (/מתחם|קמפוס/.test(tags+desc)) s -= 15;
+  }
+  if (/נוף לכנרת חשוב/.test(userCtx)) {
+    if (/נוף ל?כנרת|מול ה?כנרת/.test(desc)) s += 15;
+    else s -= 10;
+  }
+  if (/מתקני משחק לילדים|טרמפולינה/.test(q) && /כן חשוב/.test(userCtx)) {
+    if (/טרמפולינה|מתקני משחק/.test(desc)) s += 15;
+  }
+  if (/ביליארד|טניס שולחן|פינג פונג/.test(q) && /ביליארד|טניס שולחן|פינג פונג|פינג-פונג/.test(desc)) s += 10;
   if (/ספא/.test(q) && /ספא/.test(tags+desc)) s+=10;
   if (/כשר/.test(q) && /כשר/.test(tags+title)) s+=25;
   if (/וילה/.test(q) && /וילה/.test(tags+title)) s+=15;
@@ -513,6 +569,11 @@ function scoreLocal(p, ctx, cityMatch, strict) {
     if (/זוגות/.test(tags) || /רומנטי/.test(tags+desc)) s += 20;
   }
   if (/משפח/.test(q) && /משפח/.test(tags+desc)) s+=10;
+  if (/כלב|חיות מחמד|חיית מחמד/.test(q)) {
+    if (p.pets === true) s += 25;
+    else if (p.pets === false) s -= 40;
+    // אם p.pets לא קיים (עדיין null/undefined כי טרם הועשר המאגר) - לא משנים כלום, כדי לא להעניש נכסים סתם
+  }
   if (/צפון/.test(q) && /צפון|גליל|כנרת|גולן/.test(tags)) s+=15;
   if (/דרום/.test(q) && /דרום|אילת|נגב|ים המלח/.test(tags)) s+=15;
   const pw = parseInt((p.priceWeekend||p.priceWeek||'').replace(/[^\d]/g,''));
