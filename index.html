@@ -248,13 +248,15 @@ const DATES = [
   {l:'אמצע שבוע',v:'אמצע שבוע'},{l:'קיץ',v:'קיץ'},{l:'פורים',v:'פורים'},{l:'גמיש',v:'גמיש'},
 ];
 
-const SYS = 'אתה עוזר חיפוש צימרים ישראלי, עונה בעברית בלבד. שאל שאלה אחת בלבד בכל תור. אסור לעצור או לכתוב READY לפני שכל 7 הסעיפים הבאים נענו, בסדר הזה, בלי לדלג אף אחד: 1) אזור/עיר/יישוב מדויק (אם המשתמש כבר נקב בשם ספציפי, שמור אותו בדיוק כפי שנאמר ואל תכליל אותו לאזור רחב יותר). 2) תאריך (כשאתה שואל על זה כתוב DATE_PICKER). 3) מספר לילות. 4) הרכב/מספר אנשים. 5) תקציב מקסימלי ל**לילה אחד** בשקלים (לא לכל השהות!) - שאלה חובה, גם אם נראה שכבר נאמר משהו כללי: "עד כמה ש"ח ללילה?". 6) שאלה פתוחה אחת: "יש דרישות מיוחדות? (למשל: בריכה, גקוזי, כשרות, נוף, יחידה פרטית מול מתחם עם עוד יחידות, מתאים לילדים)". 7) לכל דרישה מיוחדת שהוזכרה בתשובה לסעיף 6 (ורק אם הוזכרה) - שאל שאלת המשך אחת: לגבי בריכה/גקוזי שאל רמת חשיבות ("חובה, עדיף שיהיה, או לא קריטי") ואם התשובה חיובית שאל עוד שאלת המשך קצרה אחת (גודל/פרטיות); לגבי נוף, פרטיות מתחם, או ילדים - שאל שאלת הבהרה קצרה אחת מתאימה. אחרי שכל 7 הסעיפים נענו (גם אם התשובה לסעיף 6 הייתה "אין"), כתוב סיכום קצר של כל מה שנאסף ואז READY. אל תדלג על אף סעיף כדי לקצר את השיחה.';
+const SYS = 'אתה עוזר חיפוש צימרים ישראלי. אתה חייב להשיב אך ורק ב-JSON תקין (בלי טקסט לפניו/אחריו, בלי ```), במבנה המדויק הזה: {"message":"טקסט השאלה או הסיכום בעברית","options":["אפשרות קצרה","אפשרות קצרה"],"is_date":false,"ready":false}. חשוב מאוד: "options" חייב להכיל תמיד 2-5 אפשרויות תשובה קצרות ורלוונטיות ללחיצה, כדי שהמשתמש לא יצטרך להקליד תשובה חופשית - כולל במקרים של מספרים (למשל לכמות אנשים תן אפשרויות כמו "2 מבוגרים","2 מבוגרים ו-2 ילדים" וכדומה, ולתקציב תן טווחי סכומים). אפשר לתת פחות מ-2 רק אם באמת אין שום דרך סבירה לנחש אפשרויות (נדיר). לפני כל שאלה חדשה, קרא מחדש את כל מה שהמשתמש כבר כתב מתחילת השיחה (כולל ובמיוחד ההודעה הראשונה שלו) - אם פרט כלשהו כבר ניתן שם בכל צורה (גם אם לא כתשובה ישירה לשאלה נפרדת), אסור לשאול עליו שוב, ויש לעבור ישר לפרט הבא החסר. עליך לאסוף את 7 הסעיפים הבאים, בסדר, בלי לדלג אף אחד ובלי לשאול על מה שכבר נאמר: 1) אזור/עיר/יישוב מדויק (אם המשתמש כבר נקב בשם ספציפי, שמור אותו בדיוק כפי שנאמר ואל תכליל אותו לאזור רחב יותר). 2) תאריך - שאלה זו צריכה is_date:true, ותן גם 2-3 options מהירים (כמו "גמיש","סוף שבוע הקרוב") בנוסף ללוח שיוצג. 3) מספר לילות. 4) הרכב/מספר אנשים. 5) תקציב מקסימלי ללילה אחד בשקלים (לא לכל השהות) - שאלה חובה תמיד: "עד כמה ש"ח ללילה?". 6) שאלה פתוחה אחת עם options כמו ["בריכה","גקוזי","כשרות","נוף","יחידה פרטית","מתאים לילדים","אין דרישות מיוחדות"]: "יש דרישות מיוחדות?". 7) לכל דרישה מיוחדת שהוזכרה בסעיף 6 (ורק אם הוזכרה) - שאל שאלת המשך אחת עם options מתאימים: לגבי בריכה/גקוזי שאל רמת חשיבות (options: ["חובה","עדיף שיהיה","לא קריטי"]) ואם התשובה חיובית שאל עוד שאלת המשך קצרה אחת (גודל/פרטיות, גם עם options); לגבי נוף, פרטיות מתחם, או ילדים - שאל שאלת הבהרה קצרה אחת עם options. אחרי שכל 7 הסעיפים כוסו (גם אם התשובה לסעיף 6 הייתה "אין דרישות"), קבע ready:true ו-message יהיה סיכום קצר של כל הפרטים שנאספו, ו-options מערך ריק.';
 
 async function callClaude(sys, msgs, tok) {
   try {
+    const todayStr = new Date().toLocaleDateString('he-IL', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
+    const sysWithDate = 'התאריך הנוכחי (היום) הוא ' + todayStr + '. השתמש בזה כדי לחשב תאריכים יחסיים (למשל "פסח הקרוב", "בעוד חודש" וכדומה) נכון, ואל תניח שנה שגויה. ' + sys;
     const r = await fetch(CLAUDE_FN, {
       method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({model:'claude-sonnet-4-6',max_tokens:tok||400,system:sys,messages:msgs})
+      body: JSON.stringify({model:'claude-sonnet-4-6',max_tokens:tok||400,system:sysWithDate,messages:msgs})
     });
     const d = await r.json();
     return d.content?.[0]?.text || '';
@@ -294,23 +296,50 @@ async function sendMsg() {
 async function nextQ() {
   document.getElementById('send-btn').disabled = true;
   showTyping();
-  const r = await callClaude(SYS, chatHistory, 400);
+  const r = await callClaude(SYS, chatHistory, 500);
   hideTyping();
-  if (r) { chatHistory.push({role:'assistant',content:r}); handleR(r); }
+  if (r) { handleR(r); }
   else fallback();
   document.getElementById('send-btn').disabled = false;
   document.getElementById('cin-ta').focus();
 }
 
 function handleR(r) {
-  if (r.includes('READY')) {
-    addAI(r.replace('READY','').trim(), null, true);
+  let parsed = null;
+  try {
+    const jsonText = r.replace(/```json|```/g,'').trim();
+    parsed = JSON.parse(jsonText);
+  } catch (e) { parsed = null; }
+
+  if (!parsed || typeof parsed.message !== 'string') {
+    // גיבוי: אם ה-AI לא החזיר JSON תקין, מתייחסים לתגובה כטקסט חופשי (תאימות לאחור)
+    chatHistory.push({role:'assistant',content:r});
+    if (r.includes('READY')) {
+      addAI(r.replace('READY','').trim(), null, true);
+      document.getElementById('cin').style.display = 'none';
+      document.getElementById('cacts').style.display = 'flex';
+    } else if (r.includes('DATE_PICKER')) {
+      addAI(r.replace('DATE_PICKER','').trim() || 'מתי?');
+      showDates();
+    } else { addAI(r, detectQR(r)); }
+    scrollW();
+    return;
+  }
+
+  // שומרים בהיסטוריה רק את הטקסט הקריא (לא את מעטפת ה-JSON), כדי שההקשר לשיחות הבאות יישאר נקי
+  chatHistory.push({role:'assistant',content:parsed.message});
+
+  if (parsed.ready) {
+    addAI(parsed.message, null, true);
     document.getElementById('cin').style.display = 'none';
     document.getElementById('cacts').style.display = 'flex';
-  } else if (r.includes('DATE_PICKER')) {
-    addAI(r.replace('DATE_PICKER','').trim() || 'מתי?');
+  } else if (parsed.is_date) {
+    addAI(parsed.message, null);
     showDates();
-  } else { addAI(r, detectQR(r)); }
+  } else {
+    const opts = (parsed.options && parsed.options.length) ? parsed.options : detectQR(parsed.message);
+    addAI(parsed.message, opts);
+  }
   scrollW();
 }
 
@@ -333,10 +362,11 @@ function detectQR(t) {
 }
 
 function showDates() {
+  document.getElementById('dp')?.remove();
   const w = document.getElementById('cwin');
   const d = document.createElement('div'); d.className='mai'; d.id='dp';
   d.innerHTML='<div class="aav">AI</div><div class="abub">בחר מועד:<div class="dgrid">'
-    + DATES.map(dt=>'<button class="dbtn" onclick="pickDate(\''+esc(dt.v)+'\')">'+dt.l+'</button>').join('')+'</div></div>';
+    + DATES.map(dt=>'<button class="dbtn" onclick="pickDate(\''+esc(dt.v)+'\')">'+esc(dt.l)+'</button>').join('')+'</div></div>';
   w.appendChild(d); scrollW();
 }
 
@@ -379,8 +409,9 @@ async function runSearch() {
   const ctx = chatHistory.map(m=>m.content).join(' ');
   const userCtx = chatHistory.filter(m=>m.role==='user').map(m=>m.content).join(' ');
   const cityMatch = detectCity(ctx);
+  const regionMatch = cityMatch ? '' : detectRegion(ctx);
 
-  allProps = ALL_PROPS.map(p => ({...p, match:scoreLocal(p,ctx,cityMatch,true,userCtx)}))
+  allProps = ALL_PROPS.map(p => ({...p, match:scoreLocal(p,ctx,cityMatch,true,userCtx,regionMatch)}))
     .sort((a,b)=>b.match-a.match);
 
   let relevant = allProps.filter(p=>p.match>20);
@@ -388,7 +419,7 @@ async function runSearch() {
   if (relevant.length === 0) {
     // אף נכס לא עבר את כל הסינונים המחמירים (יישוב+תקציב+גודל) יחד - מרפים תקציב/גודל
     // אבל היישוב הספציפי שהמשתמש ביקש (אם ביקש) נשאר סינון קשיח תמיד, כדי לא לחזור לבעיית "תוצאות מהאזור הסובב"
-    allProps = ALL_PROPS.map(p => ({...p, match:scoreLocal(p,ctx,cityMatch,false,userCtx)}))
+    allProps = ALL_PROPS.map(p => ({...p, match:scoreLocal(p,ctx,cityMatch,false,userCtx,regionMatch)}))
       .sort((a,b)=>b.match-a.match);
     relevant = allProps.filter(p=>p.match>20);
     if (relevant.length) relaxNote = 'לא נמצא נכס שעונה על כל הדרישות במדויק (למשל תקציב) - אלו ההתאמות הקרובות ביותר.';
@@ -415,12 +446,12 @@ async function runSearch() {
   try {
     // חשוב: שולחים לדירוג ה-AI רק את המועמדים שכבר עברו את הסינון המדויק (יישוב/תקציב) -
     // כך ה-AI לא יכול "להחזיר" נכסים מאזור סובב או מעל תקציב, גם אם ידרג אותם גבוה.
-    const top30 = relevant.slice(0,30);
+    const top30 = relevant.slice(0,PAGE_SZ);
     if (!top30.length) { finish(cityMatch ? ('לא נמצאו נכסים ב'+cityMatch+' במאגר שלנו.') : 'לא נמצאו נכסים מתאימים.'); return; }
     const list = JSON.stringify(top30.map((p,i)=>({i,title:p.title,area:p.area,desc:p.desc?p.desc.slice(0,60):'',tags:p.tags})));
     const locNote = cityMatch ? ('המשתמש ביקש באופן ספציפי את היישוב "'+cityMatch+'" - כל הנכסים ברשימה כבר משויכים אליו בלבד, דרג ביניהם לפי שאר הדרישות.') : '';
-    const sys = 'דרג נכסי נופש 0-100 לפי מידת ההתאמה המדויקת לבקשה (מיקום, תקציב ודרישות מיוחדות). אל תעלה ציון לנכס שלא עונה במדויק על הבקשה. '+locNote+' JSON בלבד: {"summary":"...","r":[{"i":number,"s":score,"why":"reason"}]}';
-    const reply = await callClaude(sys,[{role:'user',content:'Request: '+ctx+'\nProps:\n'+list}],1000);
+    const sys = 'דרג נכסי נופש 0-100 לפי מידת ההתאמה המדויקת לבקשה (מיקום, תקציב ודרישות מיוחדות). אל תעלה ציון לנכס שלא עונה במדויק על הבקשה. נמק כל ציון במשפט קצר מאוד, עד 6 מילים. '+locNote+' JSON בלבד, בלי רווחים מיותרים: {"summary":"...","r":[{"i":number,"s":score,"why":"קצר"}]}';
+    const reply = await callClaude(sys,[{role:'user',content:'Request: '+ctx+'\nProps:\n'+list}],650);
     if (reply) {
       const parsed = JSON.parse(reply.replace(/```json|```/g,'').trim());
       parsed.r?.forEach(x=>{ if(top30[x.i]){top30[x.i].match=x.s;top30[x.i].why=x.why;} });
@@ -451,6 +482,41 @@ function extractRegion(area) {
 function regionOfCity(cityMatch) {
   const found = ALL_PROPS.find(p => extractCity(p.area) === cityMatch && extractRegion(p.area));
   return found ? extractRegion(found.area) : '';
+}
+
+// מילים שאם מופיעות ב"אזור" סימן שזה בעצם תיאור שיווקי (סוג נכס), לא שם גאוגרפי אמיתי - מתעלמים מהם
+const JUNK_REGION_WORDS = /צימר|סוויט|בקת|וילה|בית נופש|מלון|קמפוס|דירת נופש/;
+
+// בונה רשימת "אזורי-משנה" אמיתיים מתוך המאגר (כמו "גליל עליון", "גליל מערבי") - כדי להבדיל ביניהם,
+// ולא להתייחס לכולם כ"גליל" סתמי כשמישהו מבקש אזור-משנה ספציפי
+function buildRegionList() {
+  if (window.__regionList && window.__regionListSrc === ALL_PROPS) return window.__regionList;
+  const set = new Set();
+  ALL_PROPS.forEach(p => {
+    const r = extractRegion(p.area);
+    if (r && r.length >= 3 && !JUNK_REGION_WORDS.test(r)) set.add(r);
+  });
+  window.__regionList = [...set].sort((a,b)=>b.length-a.length);
+  window.__regionListSrc = ALL_PROPS;
+  return window.__regionList;
+}
+
+// בודק אם המשתמש ציין אזור-משנה ספציפי (כמו "גליל עליון") בטקסט הבקשה - באותה שיטה כמו זיהוי יישוב
+function detectRegion(ctx) {
+  const regions = buildRegionList();
+  if (!regions.length) return '';
+  const regionSet = new Set(regions);
+  const tokens = ctx.match(/[\u05D0-\u05EA]+/g) || [];
+  for (let len = Math.min(3, tokens.length); len >= 1; len--) {
+    for (let i = 0; i + len <= tokens.length; i++) {
+      const rest = tokens.slice(i + 1, i + len);
+      for (const first of stripHebPrefix(tokens[i])) {
+        const candidate = [first, ...rest].join(' ');
+        if (regionSet.has(candidate)) return candidate;
+      }
+    }
+  }
+  return '';
 }
 
 // רשימת אזורים/תיאורים כלליים שלא נחשבים "עיר ספציפית" (כדי לא לסנן לפיהם בטעות)
@@ -515,22 +581,26 @@ function extractCapacity(desc) {
   return null;
 }
 
-function scoreLocal(p, ctx, cityMatch, strict, userCtx) {
+function scoreLocal(p, ctx, cityMatch, strict, userCtx, regionMatch) {
   if (userCtx === undefined) userCtx = ctx;
   if (strict === undefined) strict = true;
   const area = (p.area||'');
   // אם המשתמש ביקש יישוב ספציפי - זהו סינון קשיח שתמיד נשאר, גם ב"הרפיה": רק נכסים מאותו יישוב בדיוק
   if (cityMatch) {
     if (!area.includes(cityMatch) && !(p.tags||[]).includes(cityMatch)) return 0;
+  } else if (regionMatch) {
+    // ביקשו אזור-משנה ספציפי (כמו "גליל עליון") ולא יישוב ספציפי - מסננים לפי אותו אזור-משנה בדיוק,
+    // כדי לא לערבב עם "גליל מערבי"/"גליל תחתון" סתם כי שניהם מכילים את המילה "גליל"
+    if (!area.includes(regionMatch)) return 0;
   }
-  let s = cityMatch ? 55 : 30;
+  let s = cityMatch ? 55 : (regionMatch ? 48 : 30);
   const q = ctx.toLowerCase();
   const areaL = area.toLowerCase();
   const title = (p.title||'').toLowerCase();
   const desc = (p.desc||'').toLowerCase();
   const tags = (p.tags||[]).join(' ').toLowerCase();
 
-  if (!cityMatch) {
+  if (!cityMatch && !regionMatch) {
     if (/גליל/.test(q) && /גליל/.test(areaL)) s+=35;
     if (/כנרת/.test(q) && /כנרת/.test(areaL)) s+=35;
     if (/טבריה/.test(q) && /טבריה/.test(areaL)) s+=35;
@@ -631,7 +701,7 @@ function scoreLocal(p, ctx, cityMatch, strict, userCtx) {
 function finish(summary) {
   document.getElementById('loading').classList.remove('on');
   curResults = allProps.filter(p=>p.match>20); dispPage=0;
-  document.getElementById('aibox').textContent = summary;
+  document.getElementById('aibox').innerHTML = mdFormat(esc(summary).replace(/\n/g,'<br>'));
   document.getElementById('rcnt').innerHTML = '<strong>'+curResults.length.toLocaleString()+'</strong> נכסים נמצאו';
   document.getElementById('rsrc').textContent = 'מתוך '+ALL_PROPS.length.toLocaleString()+' נכסים אמיתיים במאגר';
   buildFbar();
@@ -720,7 +790,12 @@ function renderCards(props) {
 }
 
 function addU(t){const w=document.getElementById('cwin');const d=document.createElement('div');d.className='muser';d.innerHTML='<div class="ubub">'+esc(t)+'</div>';w.appendChild(d);scrollW();}
-function addAI(t,qr,isSum){const w=document.getElementById('cwin');const d=document.createElement('div');d.className='mai';const qrH=qr&&qr.length?'<div class="qrs">'+qr.map(r=>'<button class="qr" onclick="pickQR(\''+esc(r)+'\')">'+r+'</button>').join('')+'</div>':'';const sH=isSum?'<div class="sumcard">לחץ <strong>חפש עכשיו</strong> למטה</div>':'';d.innerHTML='<div class="aav">AI</div><div class="abub">'+esc(t).replace(/\n/g,'<br>')+qrH+sH+'</div>';w.appendChild(d);scrollW();}
+function mdFormat(escapedText) {
+  let out = escapedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  out = out.replace(/\*{2,}/g, ''); // ניקוי כוכביות בודדות/עודפות שנשארו בלי זוג תקין
+  return out;
+}
+function addAI(t,qr,isSum){const w=document.getElementById('cwin');const d=document.createElement('div');d.className='mai';const qrH=qr&&qr.length?'<div class="qrs">'+qr.map(r=>'<button class="qr" onclick="pickQR(\''+esc(r)+'\')">'+esc(r)+'</button>').join('')+'</div>':'';const sH=isSum?'<div class="sumcard">לחץ <strong>חפש עכשיו</strong> למטה</div>':'';d.innerHTML='<div class="aav">AI</div><div class="abub">'+mdFormat(esc(t).replace(/\n/g,'<br>'))+qrH+sH+'</div>';w.appendChild(d);scrollW();}
 function showTyping(){const w=document.getElementById('cwin');const d=document.createElement('div');d.className='typing';d.id='typing';d.innerHTML='<div class="aav">AI</div><div class="tdots"><span></span><span></span><span></span></div>';w.appendChild(d);scrollW();}
 function hideTyping(){document.getElementById('typing')?.remove();}
 function scrollW(){const w=document.getElementById('cwin');setTimeout(()=>{w.scrollTop=w.scrollHeight;},50);}
