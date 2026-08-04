@@ -200,7 +200,6 @@ h1 span{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-back
 </div>
 
 <script>
-const CLAUDE_FN = '/.netlify/functions/claude';
 const PAGE_SZ = 24;
 let ALL_PROPS = [];
 let chatHistory = [];
@@ -249,119 +248,122 @@ const DATES = [
   {l:'אמצע שבוע',v:'אמצע שבוע'},{l:'קיץ',v:'קיץ'},{l:'פורים',v:'פורים'},{l:'גמיש',v:'גמיש'},
 ];
 
-const SYS = 'אתה עוזר חיפוש צימרים ישראלי. אתה חייב להשיב אך ורק ב-JSON תקין (בלי טקסט לפניו/אחריו, בלי ```), במבנה המדויק הזה: {"message":"טקסט השאלה או הסיכום בעברית","options":["אפשרות קצרה","אפשרות קצרה"],"is_date":false,"ready":false}. חשוב מאוד: "options" חייב להכיל תמיד 2-5 אפשרויות תשובה קצרות ורלוונטיות ללחיצה, כדי שהמשתמש לא יצטרך להקליד תשובה חופשית - כולל במקרים של מספרים (למשל לכמות אנשים תן אפשרויות כמו "2 מבוגרים","2 מבוגרים ו-2 ילדים" וכדומה, ולתקציב תן טווחי סכומים). אפשר לתת פחות מ-2 רק אם באמת אין שום דרך סבירה לנחש אפשרויות (נדיר). לפני כל שאלה חדשה, קרא מחדש את כל מה שהמשתמש כבר כתב מתחילת השיחה (כולל ובמיוחד ההודעה הראשונה שלו) - אם פרט כלשהו כבר ניתן שם בכל צורה (גם אם לא כתשובה ישירה לשאלה נפרדת), אסור לשאול עליו שוב, ויש לעבור ישר לפרט הבא החסר. עליך לאסוף את 7 הסעיפים הבאים, בסדר, בלי לדלג אף אחד ובלי לשאול על מה שכבר נאמר: 1) אזור/עיר/יישוב מדויק (אם המשתמש כבר נקב בשם ספציפי, שמור אותו בדיוק כפי שנאמר ואל תכליל אותו לאזור רחב יותר). 2) תאריך - is_date:true שייך *רק* לשאלה הכללית הראשונה "מתי בערך?" (ואז תן גם 2-3 options מהירים כמו "גמיש","סוף שבוע הקרוב", בנוסף ללוח שיוצג). כלל כללי: is_date:true מותר להופיע *פעם אחת בלבד* בכל שיחה - בשאלה הכללית הראשונה בלבד. בכל שאלת המשך על תאריך אחרי זה (בין אם המשתמש ציין חג/עונה כמו "שבועות", ובין אם ציין תיאור יחסי כמו "חודש הבא"/"בעוד שבועיים"/"בקיץ") - is_date חייב להיות false, ותן options ממוקדים לצמצום/אישור (כמו טווחי תאריכים ספציפיים, או ["מתאים","תאריך אחר"]) בלי להציג שוב את לוח/רשימת החגים המלאה. 3) מספר לילות. 4) הרכב/מספר אנשים. 5) תקציב מקסימלי ללילה אחד בשקלים (לא לכל השהות) - שאלה חובה תמיד: "עד כמה ש"ח ללילה?". 6) שאלה פתוחה אחת עם options כמו ["בריכה","גקוזי","כשרות","נוף","יחידה פרטית","מתאים לילדים","אין דרישות מיוחדות"]: "יש דרישות מיוחדות?". 7) לכל דרישה מיוחדת שהוזכרה (ורק אם הוזכרה) - שאל שאלת המשך אחת עם options מתאימים: לגבי בריכה/גקוזי - כלל חשוב: אם בריכה/גקוזי הוזכרו כבר בהודעה הראשונה של המשתמש (ההודעה שפתחה את השיחה, לפני ששאלת אתה שאלות), זה אוטומטית נחשב "חובה" מבחינת המשתמש - אסור לשאול את שאלת רמת החשיבות בכלל, עבור ישר לשאלת פרטי/משותף (options: ["פרטי חשוב","גם משותף בסדר"]). רק אם בריכה/גקוזי עלו לראשונה כתשובה לשאלה הפתוחה של סעיף 6 (ולא הוזכרו בהודעה הראשונה), שאל את שאלת רמת החשיבות (options: ["חובה","עדיף שיהיה","לא קריטי"]) ואז אם התשובה חיובית שאל את שאלת פרטי/משותף. אין לשאול על גודל הבריכה/גקוזי בשלב זה (עדיין אין מספיק נתונים על כך). לגבי נוף, פרטיות מתחם, או ילדים - שאל שאלת הבהרה קצרה אחת עם options. אסור בשום מקרה להמציא שאלות המשך נוספות מעבר למה שצוין כאן במפורש - ברגע שקיבלת תשובה לפרט מסוים (כולל תשובות לשאלות ההמשך שכן צוינו), עבור מיד לסעיף הבא ברשימה, בלי לשאול עוד שאלות תחקור על אותו נושא. אסור בשום מקרה לשאול שאלה בלי options (גם לא שאלת המשך). אחרי שכל 7 הסעיפים כוסו (גם אם התשובה לסעיף 6 הייתה "אין דרישות"), קבע ready:true ו-message יהיה סיכום קצר של כל הפרטים שנאספו, ו-options מערך ריק.';
-
-async function callClaude(sys, msgs, tok) {
-  try {
-    const todayStr = new Date().toLocaleDateString('he-IL', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
-    const sysWithDate = 'התאריך הנוכחי (היום) הוא ' + todayStr + '. השתמש בזה כדי לחשב תאריכים יחסיים (למשל "פסח הקרוב", "בעוד חודש" וכדומה) נכון, ואל תניח שנה שגויה. ' + sys;
-    const r = await fetch(CLAUDE_FN, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({model:'claude-sonnet-4-6',max_tokens:tok||400,system:sysWithDate,messages:msgs})
-    });
-    const d = await r.json();
-    return d.content?.[0]?.text || '';
-  } catch { return ''; }
+// ===== שאלון דטרמיניסטי (ללא קריאות API) =====
+// כל הלוגיקה הזו הייתה קודם מיושמת ע"י בקשת AI על כל תשובה (7-8 קריאות לשיחה).
+// הרצף, השאלות וכללי הדילוג זהים למה שהוגדר קודם ב-system prompt של ה-AI,
+// רק שעכשיו זה רץ מקומית בדפדפן במקום לעבור דרך Claude API - אפס עלות לשלב הזה.
+let wz = null;
+function resetWizard() {
+  wz = {
+    hasArea:false, hasDate:false, hasNights:false, hasPeople:false, hasBudget:false,
+    specialDone:false, pending:null, queue:[],
+    poolMentionedFirst:false, poolNeedsImportance:false, poolPrivacyNeeded:false,
+    jacuzziMentionedFirst:false, jacuzziNeedsImportance:false, jacuzziPrivacyNeeded:false
+  };
 }
+resetWizard();
 
-async function startChat() {
+function startChat() {
   const v = document.getElementById('main-ta').value.trim();
   if (!v) return;
   document.getElementById('start-box').style.display = 'none';
   document.getElementById('chat-phase').style.display = 'block';
   document.getElementById('chips').style.display = 'none';
+  resetWizard();
   chatHistory.push({role:'user',content:v});
   addU(v);
   const c = v.toLowerCase();
-  const hasArea = /גליל|כנרת|גולן|ים המלח|אילת|ירושלים|באר שבע|תל אביב|חיפה|צפון|דרום|מרכז|טבריה|צפת|ראש פינה/.test(c) || !!detectCity(c);
-  const hasDate = /שבת|סוף שבוע|חג|פסח|חנוכה|ראש השנה|סוכות|שבועות|בין הזמנים|קיץ|\d/.test(c);
-  const hasPpl = /זוג|משפחה|אנשים|חדרים|ילדים/.test(c);
-  const hasBudget = /תקציב|₪|עד \d+|\d+\s*-\s*\d+\s*(ש"ח|שקל|₪)?|גמיש/.test(c);
-  if (hasArea && hasDate && hasPpl && hasBudget) {
-    addAI('מצוין! יש לי את כל מה שצריך.', null, true);
-    document.getElementById('cin').style.display = 'none';
-    document.getElementById('cacts').style.display = 'flex';
+  wz.hasArea = /גליל|כנרת|גולן|ים המלח|אילת|ירושלים|באר שבע|תל אביב|חיפה|צפון|דרום|מרכז|טבריה|צפת|ראש פינה/.test(c) || !!detectCity(c);
+  wz.hasDate = /שבת|סוף שבוע|חג|פסח|חנוכה|ראש השנה|סוכות|שבועות|בין הזמנים|קיץ|\d/.test(c);
+  wz.hasNights = /לילה|לילות|ימים|שבוע/.test(c);
+  wz.hasPeople = /זוג|משפחה|אנשים|חדרים|ילדים/.test(c);
+  wz.hasBudget = /תקציב|₪|עד \d+|\d+\s*-\s*\d+\s*(ש"ח|שקל|₪)?|גמיש/.test(c);
+  wz.poolMentionedFirst = /בריכה/.test(c);
+  wz.jacuzziMentionedFirst = /ג'?קוזי/.test(c);
+  if (wz.hasArea && wz.hasDate && wz.hasPeople && wz.hasBudget) {
+    wz.specialDone = true; // תואם להתנהגות המקורית: אם כל הבסיס כבר נאמר, מדלגים ישר לסיום
+    finishWizard(true);
     return;
   }
-  await nextQ();
+  askNext();
 }
 
-async function sendMsg() {
+function sendMsg() {
   const ta = document.getElementById('cin-ta');
   const v = ta.value.trim(); if (!v) return;
   ta.value = ''; ta.style.height = 'auto';
   chatHistory.push({role:'user',content:v});
-  addU(v); await nextQ();
+  addU(v);
+  processAnswer(v);
 }
 
-async function nextQ() {
-  document.getElementById('send-btn').disabled = true;
-  showTyping();
-  const r = await callClaude(SYS, chatHistory, 500);
-  hideTyping();
-  if (r) { handleR(r); }
-  else fallback();
-  document.getElementById('send-btn').disabled = false;
-  document.getElementById('cin-ta').focus();
+function pickQR(t) {
+  document.querySelectorAll('.qrs').forEach(e=>e.remove());
+  chatHistory.push({role:'user',content:t}); addU(t);
+  processAnswer(t);
 }
 
-function handleR(r) {
-  let parsed = null;
-  try {
-    const jsonText = r.replace(/```json|```/g,'').trim();
-    parsed = JSON.parse(jsonText);
-  } catch (e) { parsed = null; }
+function pickDate(v) {
+  document.getElementById('dp')?.remove();
+  chatHistory.push({role:'user',content:v}); addU(v);
+  processAnswer(v);
+}
 
-  if (!parsed || typeof parsed.message !== 'string') {
-    // גיבוי: אם ה-AI לא החזיר JSON תקין, מתייחסים לתגובה כטקסט חופשי (תאימות לאחור)
-    chatHistory.push({role:'assistant',content:r});
-    if (r.includes('READY')) {
-      addAI(r.replace('READY','').trim(), null, true);
-      document.getElementById('cin').style.display = 'none';
-      document.getElementById('cacts').style.display = 'flex';
-    } else if (r.includes('DATE_PICKER')) {
-      addAI(r.replace('DATE_PICKER','').trim() || 'מתי?');
-      showDates();
-    } else { addAI(r, detectQR(r)); }
-    scrollW();
+function processAnswer(t) {
+  const field = wz.pending;
+  const low = t.toLowerCase();
+  if (field === 'area') wz.hasArea = true;
+  else if (field === 'date') wz.hasDate = true;
+  else if (field === 'nights') wz.hasNights = true;
+  else if (field === 'people') wz.hasPeople = true;
+  else if (field === 'budget') wz.hasBudget = true;
+  else if (field === 'special') {
+    wz.specialDone = true;
+    if (/בריכה/.test(low)) { if (wz.poolMentionedFirst) wz.poolPrivacyNeeded = true; else wz.poolNeedsImportance = true; }
+    if (/ג'?קוזי/.test(low)) { if (wz.jacuzziMentionedFirst) wz.jacuzziPrivacyNeeded = true; else wz.jacuzziNeedsImportance = true; }
+    if (/נוף/.test(low)) wz.queue.push('view');
+    if (/פרטיות|יחידה פרטית|מבודד/.test(low)) wz.queue.push('privacy');
+    if (/ילדים/.test(low)) wz.queue.push('kids');
+  }
+  else if (field === 'poolImportance') { wz.poolNeedsImportance = false; if (/חובה|עדיף/.test(low)) wz.poolPrivacyNeeded = true; }
+  else if (field === 'poolPrivacy') { wz.poolPrivacyNeeded = false; }
+  else if (field === 'jacuzziImportance') { wz.jacuzziNeedsImportance = false; if (/חובה|עדיף/.test(low)) wz.jacuzziPrivacyNeeded = true; }
+  else if (field === 'jacuzziPrivacy') { wz.jacuzziPrivacyNeeded = false; }
+  else if (field === 'view' || field === 'privacy' || field === 'kids') { wz.queue.shift(); }
+  askNext();
+}
+
+function askNext() {
+  if (!wz.hasArea) { wz.pending='area'; addAI('באיזה אזור, עיר או יישוב?', ['גליל','כנרת','גולן','ים המלח','אילת','ירושלים','באר שבע','כל ישראל']); return; }
+  if (!wz.hasDate) {
+    wz.pending='date';
+    if (!dateCalendarShown) { dateCalendarShown = true; addAI('מתי בערך?', ['גמיש','סוף שבוע הקרוב']); }
+    else addAI('מתי בערך?');
+    showDates();
     return;
   }
-
-  // שומרים בהיסטוריה רק את הטקסט הקריא (לא את מעטפת ה-JSON), כדי שההקשר לשיחות הבאות יישאר נקי
-  chatHistory.push({role:'assistant',content:parsed.message});
-
-  if (parsed.ready) {
-    addAI(parsed.message, null, true);
-    document.getElementById('cin').style.display = 'none';
-    document.getElementById('cacts').style.display = 'flex';
-  } else if (parsed.is_date && !dateCalendarShown) {
-    dateCalendarShown = true;
-    addAI(parsed.message, (parsed.options && parsed.options.length) ? parsed.options : null);
-    showDates();
-  } else {
-    const opts = (parsed.options && parsed.options.length) ? parsed.options : detectQR(parsed.message);
-    addAI(parsed.message, opts);
+  if (!wz.hasNights) { wz.pending='nights'; addAI('כמה לילות?', ['לילה','2 לילות','3 לילות','שבוע']); return; }
+  if (!wz.hasPeople) { wz.pending='people'; addAI('כמה אנשים ומה ההרכב?', ['זוג','משפחה עם ילדים','קבוצת חברים','חדרי הורים נפרדים']); return; }
+  if (!wz.hasBudget) { wz.pending='budget'; addAI('עד כמה ש"ח ללילה?', ['עד 600','600-1000','1000-1500','גמיש']); return; }
+  if (!wz.specialDone) { wz.pending='special'; addAI('יש דרישות מיוחדות?', ['בריכה','גקוזי','כשרות','נוף','יחידה פרטית','מתאים לילדים','אין דרישות מיוחדות']); return; }
+  if (wz.poolNeedsImportance) { wz.pending='poolImportance'; addAI('כמה חשובה הבריכה?', ['חובה','עדיף שיהיה','לא קריטי']); return; }
+  if (wz.poolPrivacyNeeded) { wz.pending='poolPrivacy'; addAI('בריכה פרטית חשובה, או שגם משותפת בסדר?', ['פרטי חשוב','גם משותף בסדר']); return; }
+  if (wz.jacuzziNeedsImportance) { wz.pending='jacuzziImportance'; addAI('כמה חשוב הג\'קוזי?', ['חובה','עדיף שיהיה','לא קריטי']); return; }
+  if (wz.jacuzziPrivacyNeeded) { wz.pending='jacuzziPrivacy'; addAI('ג\'קוזי פרטי חשוב, או שגם משותף בסדר?', ['פרטי חשוב','גם משותף בסדר']); return; }
+  if (wz.queue.length) {
+    const f = wz.queue[0]; wz.pending = f;
+    if (f === 'view') addAI('נוף לכנרת חשוב, או שנוף כללי מספיק?', ['נוף לכנרת חשוב','נוף כללי מספיק']);
+    else if (f === 'privacy') addAI('חשובה יחידה פרטית ומבודדת, או שגם מתחם עם עוד יחידות בסדר?', ['יחידה פרטית ומבודדת','מתחם בסדר גם','לא משנה']);
+    else if (f === 'kids') addAI('מתקני משחק/טרמפולינה לילדים חשוב?', ['כן חשוב','לא קריטי']);
+    return;
   }
-  scrollW();
+  finishWizard(false);
 }
 
-function detectQR(t) {
-  if (/מתי|מועד/.test(t)) return null;
-  if (/לילות|משך/.test(t)) return ['לילה','2 לילות','3 לילות','שבוע'];
-  if (/אנשים|הרכב/.test(t)) return ['זוג','משפחה עם ילדים','קבוצת חברים','חדרי הורים נפרדים'];
-  if (/אזור|עיר/.test(t)) return ['גליל','כנרת','גולן','ים המלח','אילת','ירושלים','באר שבע','כל ישראל'];
-  if (/תקציב|מחיר/.test(t)) return ['עד 600','600-1000','1000-1500','גמיש'];
-  if (/דרישות/.test(t)) return ['בריכה','גקוזי','כשרות','מתאים לכלבים','ללא'];
-  if (/בריכה.*(חובה|עדיף|קריטי)/.test(t)) return ['חובה','עדיף שיהיה','לא צריך'];
-  if (/גודל הבריכה/.test(t)) return ['משנה מאוד - גדולה','לא משמעותי','גם קטנה מתאימה'];
-  if (/בריכה פרטית|בריכה מחוממת|סוג בריכה/.test(t)) return ['פרטית','מחוממת','שניהם חשובים','לא משנה'];
-  if (/גקוזי.*(חובה|עדיף|קריטי)/.test(t)) return ['חובה','עדיף שיהיה','לא צריך'];
-  if (/גקוזי פרטי/.test(t)) return ['פרטי חשוב','גם משותף בסדר'];
-  if (/יחידה פרטית ומבודדת|מתחם עם עוד יחידות/.test(t)) return ['יחידה פרטית ומבודדת','מתחם בסדר גם','לא משנה'];
-  if (/נוף לכנרת/.test(t)) return ['נוף לכנרת חשוב','נוף כללי מספיק'];
-  if (/מתקני משחק לילדים|טרמפולינה/.test(t)) return ['כן חשוב','לא קריטי'];
-  if (/חשוב|כמה.*(רוצה|רוצים|מעדיפ)/.test(t)) return ['חשוב מאוד','קצת חשוב','לא כל כך חשוב'];
-  return ['כן','לא','לא משנה לי']; // רשת ביטחון גנרית - עדיף אפשרות כללית מאשר לאלץ הקלדה חופשית
+function finishWizard(instant) {
+  addAI(instant ? 'מצוין! יש לי את כל מה שצריך.' : 'מצוין! אספתי את כל הפרטים - אפשר לחפש.', null, true);
+  document.getElementById('cin').style.display = 'none';
+  document.getElementById('cacts').style.display = 'flex';
 }
 
 function showDates() {
@@ -371,35 +373,6 @@ function showDates() {
   d.innerHTML='<div class="aav">AI</div><div class="abub">בחר מועד:<div class="dgrid">'
     + DATES.map(dt=>'<button class="dbtn" onclick="pickDate(\''+esc(dt.v)+'\')">'+esc(dt.l)+'</button>').join('')+'</div></div>';
   w.appendChild(d); scrollW();
-}
-
-function pickDate(v) {
-  document.getElementById('dp')?.remove();
-  chatHistory.push({role:'user',content:v}); addU(v); nextQ();
-}
-
-function fallback() {
-  const ctx = chatHistory.map(m=>m.content).join(' ').toLowerCase();
-  const k = {
-    area: /גליל|כנרת|גולן|ים המלח|אילת|ירושלים|באר שבע|חיפה|צפת|טבריה|צפון|דרום|מרכז/.test(ctx) || !!detectCity(ctx),
-    date: /שבת|סוף שבוע|חג|פסח|חנוכה|בין הזמנים|קיץ|\d/.test(ctx),
-    nights: /לילה|לילות|ימים|שבוע/.test(ctx),
-    people: /זוג|משפחה|אנשים|חדרים|\d/.test(ctx),
-    budget: /תקציב|₪|עד \d+|\d+\s*-\s*\d+\s*(ש"ח|שקל|₪)?|גמיש/.test(ctx),
-  };
-  if (!k.area) { addAI('באיזה אזור, עיר או יישוב?',['גליל','כנרת','גולן','ים המלח','אילת','ירושלים','באר שבע','כל ישראל']); return; }
-  if (!k.date) { addAI('מתי?'); showDates(); return; }
-  if (!k.nights) { addAI('כמה לילות?',['לילה','2 לילות','3 לילות','שבוע']); return; }
-  if (!k.people) { addAI('כמה אנשים?',['זוג','משפחה','קבוצת חברים','חדרי הורים נפרדים']); return; }
-  if (!k.budget) { addAI('מה התקציב המקסימלי שלך ללילה אחד?',['עד 600','600-1000','1000-1500','גמיש']); return; }
-  addAI('מצוין! מוכן לחפש.', null, true);
-  document.getElementById('cin').style.display='none';
-  document.getElementById('cacts').style.display='flex';
-}
-
-function pickQR(t) {
-  document.querySelectorAll('.qrs').forEach(e=>e.remove());
-  chatHistory.push({role:'user',content:t}); addU(t); nextQ();
 }
 
 async function runSearch() {
@@ -447,24 +420,18 @@ async function runSearch() {
   }
   document.getElementById('lcount').textContent = relevant.length;
 
-  try {
-    // חשוב: שולחים לדירוג ה-AI רק את המועמדים שכבר עברו את הסינון המדויק (יישוב/תקציב) -
-    // כך ה-AI לא יכול "להחזיר" נכסים מאזור סובב או מעל תקציב, גם אם ידרג אותם גבוה.
-    const top30 = relevant.slice(0,PAGE_SZ);
-    if (!top30.length) { finish(cityMatch ? ('לא נמצאו נכסים ב'+cityMatch+' במאגר שלנו.') : 'לא נמצאו נכסים מתאימים.'); return; }
-    const list = JSON.stringify(top30.map((p,i)=>({i,title:p.title,area:p.area,desc:p.desc?p.desc.slice(0,60):'',tags:p.tags})));
-    const locNote = cityMatch ? ('המשתמש ביקש באופן ספציפי את היישוב "'+cityMatch+'" - כל הנכסים ברשימה כבר משויכים אליו בלבד, דרג ביניהם לפי שאר הדרישות.') : '';
-    const sys = 'דרג נכסי נופש 0-100 לפי מידת ההתאמה המדויקת לבקשה (מיקום, תקציב ודרישות מיוחדות). אל תעלה ציון לנכס שלא עונה במדויק על הבקשה. נמק כל ציון במשפט קצר מאוד, עד 6 מילים. '+locNote+' JSON בלבד, בלי רווחים מיותרים: {"summary":"...","r":[{"i":number,"s":score,"why":"קצר"}]}';
-    const reply = await callClaude(sys,[{role:'user',content:'Request: '+ctx+'\nProps:\n'+list}],650);
-    if (reply) {
-      const parsed = JSON.parse(reply.replace(/```json|```/g,'').trim());
-      parsed.r?.forEach(x=>{ if(top30[x.i]){top30[x.i].match=x.s;top30[x.i].why=x.why;} });
-      allProps.sort((a,b)=>b.match-a.match);
-      finish((relaxNote?relaxNote+' ':'')+(parsed.summary||''));
-    } else { finish((relaxNote?relaxNote+' ':'')+'מצאתי '+relevant.length+' נכסים מותאמים.'); }
-  } catch {
-    finish((relaxNote?relaxNote+' ':'')+'מצאתי '+relevant.length+' נכסים מותאמים.');
-  }
+  // דירוג מקומי בלבד - בלי שום קריאת API. הניקוד כבר חושב ע"י scoreLocal למעלה (אזור, תקציב, תגיות),
+  // כאן רק בונים "למה מתאים" קצר לכל נכס מתוך התגיות שלו שבאמת הוזכרו בבקשת המשתמש.
+  const top30 = relevant.slice(0, PAGE_SZ);
+  if (!top30.length) { finish(cityMatch ? ('לא נמצאו נכסים ב'+cityMatch+' במאגר שלנו.') : 'לא נמצאו נכסים מתאימים.'); return; }
+  const qLower = ctx.toLowerCase();
+  top30.forEach(p => {
+    const reasons = [];
+    (p.tags||[]).forEach(tag => { if (tag && qLower.includes(String(tag).toLowerCase())) reasons.push(tag); });
+    if (cityMatch) reasons.unshift(cityMatch);
+    p.why = reasons.slice(0,3).join(', ');
+  });
+  finish((relaxNote?relaxNote+' ':'')+'מצאתי '+relevant.length+' נכסים מותאמים.');
 }
 
 // מחלץ את שם היישוב הספציפי מתוך שדה area (החלק שאחרי הפסיק האחרון, או השדה כולו אם אין פסיק)
@@ -805,7 +772,7 @@ function showTyping(){const w=document.getElementById('cwin');const d=document.c
 function hideTyping(){document.getElementById('typing')?.remove();}
 function scrollW(){const w=document.getElementById('cwin');setTimeout(()=>{w.scrollTop=w.scrollHeight;},50);}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-function resetAll(){chatHistory=[];allProps=[];curResults=[];dispPage=0;dateCalendarShown=false;document.getElementById('chat-phase').style.display='none';document.getElementById('start-box').style.display='block';document.getElementById('chips').style.display='flex';document.getElementById('main-ta').value='';document.getElementById('cwin').innerHTML='';document.getElementById('cin').style.display='flex';document.getElementById('cacts').style.display='none';document.getElementById('rsec').classList.remove('on');document.getElementById('loading').classList.remove('on');document.getElementById('main-ta').focus();}
+function resetAll(){chatHistory=[];allProps=[];curResults=[];dispPage=0;dateCalendarShown=false;resetWizard();document.getElementById('chat-phase').style.display='none';document.getElementById('start-box').style.display='block';document.getElementById('chips').style.display='flex';document.getElementById('main-ta').value='';document.getElementById('cwin').innerHTML='';document.getElementById('cin').style.display='flex';document.getElementById('cacts').style.display='none';document.getElementById('rsec').classList.remove('on');document.getElementById('loading').classList.remove('on');document.getElementById('main-ta').focus();}
 </script>
 </body>
 </html>
