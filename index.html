@@ -8,17 +8,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0a0f1e;--bg2:#111827;--bg3:#1a2234;--card:#151d2e;
-  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
-  --gold:#c9a84c;--gold2:#e8c97a;--glow:rgba(201,168,76,0.18);
-  --text:#f0ebe0;--text2:#9aa0b0;--text3:#6b7280;--r:14px;--rs:8px;
+  --bg:#ffffff;--bg2:#f6f4ef;--bg3:#efebe1;--card:#ffffff;
+  --border:rgba(20,18,14,0.10);--border2:rgba(20,18,14,0.18);
+  --gold:#a9791f;--gold2:#c99a44;--glow:rgba(169,121,31,0.12);
+  --text:#1c1a16;--text2:#5c5648;--text3:#8b8576;--r:14px;--rs:8px;
 }
-body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl;}
-header{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,15,30,0.95);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;}
+body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl;overflow-x:hidden;}
+header{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(255,255,255,0.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;}
 .logo{font-size:22px;font-weight:700;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .logo span{-webkit-text-fill-color:var(--text);font-weight:300;}
-.nbtn{background:var(--gold);border:none;border-radius:20px;color:#0a0f1e;padding:7px 16px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;}
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 1.5rem 3rem;}
+.hero{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 1.5rem 3rem;}
 .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:var(--gold);padding:5px 16px;border-radius:20px;font-size:13px;margin-bottom:1.5rem;}
 .badge::before{content:'';width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
@@ -29,10 +28,15 @@ h1 span{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-back
 .scard{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:1.25rem;display:flex;gap:10px;align-items:flex-end;}
 .sinput{flex:1;}
 .sinput label{display:block;font-size:11px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
-.sinput textarea{width:100%;background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--rs);padding:12px 16px;color:var(--text);font-family:'Heebo',sans-serif;font-size:15px;resize:none;min-height:54px;direction:rtl;outline:none;display:block;}
+.sinput textarea{width:100%;background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--rs);padding:16px 44px 16px 16px;color:var(--text);font-family:'Heebo',sans-serif;font-size:15px;line-height:1.4;resize:none;height:52px;direction:rtl;outline:none;}
+.tawrap{position:relative;}
+.micbtn{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;border:1px solid var(--border2);background:var(--card);color:var(--text3);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:color .15s,border-color .15s;}
+.micbtn:hover{color:var(--gold);border-color:var(--gold);}
+.micbtn.rec{color:#fff;background:var(--gold);border-color:var(--gold);animation:micpulse 1.2s infinite;}
+@keyframes micpulse{0%,100%{box-shadow:0 0 0 0 var(--glow);}50%{box-shadow:0 0 0 6px var(--glow);}}
 .sinput textarea:focus{border-color:var(--gold);}
 .sinput textarea::placeholder{color:var(--text3);}
-.gobtn{background:linear-gradient(135deg,var(--gold),#b8922e);border:none;border-radius:var(--rs);color:#0a0f1e;font-family:inherit;font-size:14px;font-weight:700;padding:0 1.4rem;height:58px;cursor:pointer;white-space:nowrap;min-width:110px;}
+.gobtn{background:linear-gradient(135deg,var(--gold),#b8922e);border:none;border-radius:var(--rs);color:#fff;font-family:inherit;font-size:14px;font-weight:700;padding:0 1.4rem;height:52px;cursor:pointer;white-space:nowrap;min-width:110px;}
 #chat-phase{display:none;width:100%;max-width:700px;}
 .cwin{background:var(--card);border:1px solid var(--border2);border-radius:16px 16px 0 0;padding:1.25rem;max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
 .mai{display:flex;gap:8px;align-items:flex-start;animation:fu .3s ease;}
@@ -52,9 +56,9 @@ h1 span{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-back
 .cin{display:flex;gap:8px;background:var(--card);border:1px solid var(--border2);border-top:none;padding:10px 12px;}
 .cin textarea{flex:1;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:'Heebo',sans-serif;font-size:14px;padding:10px 14px;resize:none;direction:rtl;min-height:42px;max-height:100px;outline:none;}
 .cin textarea:focus{border-color:var(--gold);}
-.sbtn{background:var(--gold);border:none;border-radius:var(--rs);color:#0a0f1e;font-family:inherit;font-size:13px;font-weight:700;padding:0 14px;cursor:pointer;}
+.sbtn{background:var(--gold);border:none;border-radius:var(--rs);color:#fff;font-family:inherit;font-size:13px;font-weight:700;padding:0 14px;cursor:pointer;}
 .cacts{display:none;gap:10px;background:var(--card);border:1px solid var(--border2);border-top:none;border-radius:0 0 16px 16px;padding:12px;}
-.ago{flex:1;background:linear-gradient(135deg,var(--gold),#b8922e);border:none;border-radius:var(--rs);color:#0a0f1e;font-family:inherit;font-size:15px;font-weight:700;padding:12px;cursor:pointer;}
+.ago{flex:1;background:linear-gradient(135deg,var(--gold),#b8922e);border:none;border-radius:var(--rs);color:#fff;font-family:inherit;font-size:15px;font-weight:700;padding:12px;cursor:pointer;}
 .areset{background:none;border:1px solid var(--border2);border-radius:var(--rs);color:var(--text3);font-family:inherit;font-size:13px;padding:12px 16px;cursor:pointer;}
 .dgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
 .dbtn{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:8px;cursor:pointer;font-family:inherit;text-align:right;display:flex;align-items:center;gap:6px;color:var(--text2);font-size:12px;}
@@ -62,11 +66,6 @@ h1 span{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-back
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:1rem;justify-content:center;}
 .chip{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer;font-family:inherit;}
 .chip:hover{border-color:var(--gold);color:var(--gold);}
-.stats{display:flex;gap:1.5rem;justify-content:center;margin-top:2.5rem;flex-wrap:wrap;}
-.stat{text-align:center;padding:0 1rem;border-right:1px solid var(--border);}
-.stat:last-child{border-right:none;}
-.sn{font-size:1.5rem;font-weight:700;color:var(--gold);}
-.sl{font-size:11px;color:var(--text3);}
 .loading{display:none;padding:2.5rem;text-align:center;max-width:600px;margin:0 auto;}
 .loading.on{display:block;}
 .ldots{display:flex;justify-content:center;gap:6px;margin-bottom:1.5rem;}
@@ -78,8 +77,8 @@ h1 span{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-back
 .lcount{font-size:2.5rem;font-weight:700;color:var(--gold);margin-bottom:.25rem;}
 .rsec{max-width:1200px;margin:0 auto;padding:2rem 1.5rem 5rem;display:none;}
 .rsec.on{display:block;}
-.aibox{background:rgba(79,142,247,.06);border:1px solid rgba(79,142,247,.2);border-radius:var(--r);padding:1.25rem;margin-bottom:1.5rem;font-size:14px;line-height:1.8;color:var(--text2);position:relative;}
-.aibox::before{content:'AI';position:absolute;top:-10px;right:16px;background:var(--bg);color:#7db3ff;font-size:11px;font-weight:700;padding:0 8px;}
+.aibox{background:rgba(47,111,208,.06);border:1px solid rgba(47,111,208,.2);border-radius:var(--r);padding:1.25rem;margin-bottom:1.5rem;font-size:14px;line-height:1.8;color:var(--text2);position:relative;}
+.aibox::before{content:'AI';position:absolute;top:-10px;right:16px;background:var(--bg);color:#2f6fd0;font-size:11px;font-weight:700;padding:0 8px;}
 .rhdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;gap:1rem;flex-wrap:wrap;}
 .rcnt strong{color:var(--gold);font-size:1.1rem;}
 .rsrc{font-size:11px;color:var(--text3);}
@@ -97,6 +96,8 @@ h1 span{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-back
 .cloc{font-size:11px;color:var(--gold);font-weight:600;text-transform:uppercase;margin-bottom:3px;}
 .ctit{font-size:15px;font-weight:700;margin-bottom:6px;line-height:1.3;}
 .cdesc{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.csrc{font-size:10px;color:var(--text3);margin-bottom:6px;}
+.disc{font-size:11px;color:var(--text3);margin-bottom:1rem;line-height:1.6;}
 .mrow{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text3);margin:6px 0;}
 .mtrack{flex:1;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
 .mfill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));width:0%;transition:width 1s;}
@@ -108,32 +109,59 @@ h1 span{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-back
 .am{font-size:11px;background:var(--bg3);color:var(--text3);padding:2px 7px;border-radius:4px;border:1px solid var(--border);}
 .cfoot{display:flex;gap:8px;}
 .ccta{flex:1;padding:8px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);border-radius:var(--rs);color:var(--gold);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;}
-.ccta.phone{background:rgba(79,142,247,.1);border-color:rgba(79,142,247,.25);color:#7db3ff;}
+.ccta.phone{background:rgba(47,111,208,.08);border-color:rgba(47,111,208,.25);color:#2f6fd0;}
 .lmore{text-align:center;margin-top:2rem;display:none;}
-.banner{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);border-radius:var(--r);padding:1.5rem;text-align:center;margin:3rem auto;max-width:700px;}
-.banner h3{color:var(--gold);margin-bottom:.5rem;}
-.banner p{font-size:14px;color:var(--text2);line-height:1.7;}
-.bnbtn{background:var(--gold);color:#0a0f1e;border:none;border-radius:20px;padding:10px 28px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;margin-top:1rem;}
 @keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:640px){.scard{flex-direction:column;}.gobtn{width:100%;}.grid{grid-template-columns:1fr;}}
+.lpsec{max-width:800px;margin:2rem auto 4rem;padding:0 1.5rem;}
+.lpcard{background:var(--card);border:1px solid var(--border2);border-radius:var(--r);padding:2rem;}
+.lpcard h2{font-size:1.5rem;margin-bottom:.4rem;}
+.lpsub{color:var(--text2);font-size:14px;margin-bottom:1.5rem;}
+.hp{position:absolute;left:-9999px;}
+.lpgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.lpfield label{display:block;font-size:12px;color:var(--text3);margin-bottom:5px;}
+.lpfield input,.lpfield select,.lpfield textarea{width:100%;background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--rs);padding:10px 12px;color:var(--text);font-family:'Heebo',sans-serif;font-size:14px;direction:rtl;outline:none;resize:vertical;}
+.lpfield input:focus,.lpfield select:focus,.lpfield textarea:focus{border-color:var(--gold);}
+.lpfull{margin-bottom:14px;}
+.lpchips{display:flex;flex-wrap:wrap;gap:8px;}
+.lpchk{display:flex;align-items:center;gap:6px;background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:6px 12px;font-size:13px;color:var(--text2);cursor:pointer;}
+.lpchk input{accent-color:var(--gold);}
+.lpmsg{margin-top:10px;font-size:13px;}
+.lpmsg.ok{color:#2f8a4e;}
+.lpmsg.err{color:#c0392b;}
+.ftr{text-align:center;padding:2rem 1rem 3rem;border-top:1px solid var(--border);display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;}
+.ftr a{color:var(--text3);font-size:13px;text-decoration:none;}
+.ftr a:hover{color:var(--gold);}
+.legalsec{max-width:700px;margin:0 auto;padding:2rem 1.5rem;}
+.legalcard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:2rem;}
+.legalcard h2{font-size:1.3rem;margin-bottom:1rem;}
+.legalcard p{font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:.9rem;}
+.legalnote{font-style:italic;color:var(--text3);font-size:11px;}
+.lpconsent{width:100%;margin-top:6px;}
+.lpconsent a{color:var(--gold);}
+@media(max-width:640px){.lpgrid{grid-template-columns:1fr;}}
+@media(max-width:640px){.hero{justify-content:flex-start;min-height:auto;padding:96px 1.25rem 3rem;}.scard{flex-direction:column;}.gobtn{width:100%;}.grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 <header>
   <div class="logo">Zimmer<span>AI</span></div>
-  <button class="nbtn" onclick="document.getElementById('banner').scrollIntoView({behavior:'smooth'})">רשום נכס חינם</button>
 </header>
 
 <section class="hero">
-  <div class="badge">2,396 נכסים אמיתיים — כל ישראל</div>
-  <h1>כל הצימרים בישראל<br><span>במקום אחד</span></h1>
-  <p class="sub">ה-AI שואל כמה שאלות ומוצא לך את הצימר המושלם מתוך 2,396 נכסים אמיתיים</p>
+  <div class="badge">2,396 נכסים אמיתיים — בצפון הארץ</div>
+  <h1>עוזר ה-AI שלך<br><span>לחופשה נעימה</span></h1>
+  <p class="sub">כמה שאלות קצרות - והתאמה מדויקת מתוך 2,396 נכסים אמיתיים</p>
 
   <div class="sbox" id="start-box">
     <div class="scard">
       <div class="sinput">
-        <label>ספר לי מה אתה מחפש</label>
-        <textarea id="main-ta" rows="2" placeholder="לדוגמה: צימר רומנטי עם גקוזי בגליל, וילה לאירוע, קמפוס 5 חדרים..."></textarea>
+        <label>מה אתה מחפש?</label>
+        <div class="tawrap">
+          <textarea id="main-ta" rows="1" placeholder="למשל: צימר עם גקוזי בגליל"></textarea>
+          <button type="button" class="micbtn" id="mic-btn" title="דבר במקום להקליד" aria-label="קלט קולי">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </button>
+        </div>
       </div>
       <button class="gobtn" id="start-btn">התחל</button>
     </div>
@@ -157,13 +185,6 @@ h1 span{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-back
     <button class="chip" data-q="קמפוס 5 חדרים נפרדים">קמפוס 5 חדרים</button>
     <button class="chip" data-q="צימר כשר בצפון">צימר כשר בצפון</button>
     <button class="chip" data-q="סוויטה ליד הכנרת">סוויטה ליד הכנרת</button>
-  </div>
-
-  <div class="stats">
-    <div class="stat"><div class="sn" id="st-count">2,396</div><div class="sl">נכסים אמיתיים</div></div>
-    <div class="stat"><div class="sn">AI</div><div class="sl">התאמה חכמה</div></div>
-    <div class="stat"><div class="sn">מחירים</div><div class="sl">אמצ"ש וסופ"ש</div></div>
-    <div class="stat"><div class="sn">חינם</div><div class="sl">למארחים שנה ראשונה</div></div>
   </div>
 </section>
 
@@ -189,15 +210,156 @@ h1 span{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-back
     </select>
   </div>
   <div class="fbar" id="fbar"></div>
+  <div class="disc">המידע על הנכסים (כולל מחיר וזמינות) נאסף מאתרים חיצוניים ועשוי להשתנות - יש לוודא פרטים סופיים מול בעל הנכס או האתר המקורי לפני הזמנה.</div>
   <div class="grid" id="grid"></div>
   <div class="lmore" id="lmore"><button class="gobtn" style="margin:0 auto;" id="more-btn">טען עוד</button></div>
 </div>
 
-<div class="banner" id="banner">
-  <h3>שנה ראשונה חינם למארחים חדשים</h3>
-  <p>בעל צימר, וילה או קמפוס? <strong style="color:var(--gold)">ללא עמלות. ללא חוזים.</strong></p>
-  <button class="bnbtn">רשום את הנכס שלי</button>
-</div>
+<section id="list-property" class="lpsec">
+  <div class="lpcard">
+    <h2>רישום נכס</h2>
+    <p class="lpsub">בעל צימר, וילה או קמפוס? מלאו את הפרטים ונחזור אליכם.</p>
+
+    <form id="lp-form" name="property-signup" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+      <input type="hidden" name="form-name" value="property-signup" />
+      <p class="hp"><label>אל תמלאו שדה זה: <input name="bot-field" /></label></p>
+
+      <div class="lpgrid">
+        <div class="lpfield">
+          <label>שם איש קשר *</label>
+          <input type="text" name="contact_name" required>
+        </div>
+        <div class="lpfield">
+          <label>טלפון *</label>
+          <input type="tel" name="phone" required>
+        </div>
+        <div class="lpfield">
+          <label>אימייל</label>
+          <input type="email" name="email">
+        </div>
+        <div class="lpfield">
+          <label>שם הנכס *</label>
+          <input type="text" name="property_name" required>
+        </div>
+        <div class="lpfield">
+          <label>סוג נכס *</label>
+          <select name="property_type" required>
+            <option value="">בחר...</option>
+            <option>צימר</option>
+            <option>וילה</option>
+            <option>קמפוס</option>
+            <option>סוויטה</option>
+            <option>אחר</option>
+          </select>
+        </div>
+        <div class="lpfield">
+          <label>יישוב / אזור *</label>
+          <input type="text" name="area" required>
+        </div>
+        <div class="lpfield">
+          <label>מספר יחידות/חדרים</label>
+          <input type="text" name="units">
+        </div>
+        <div class="lpfield">
+          <label>קיבולת אורחים מקסימלית</label>
+          <input type="text" name="capacity">
+        </div>
+        <div class="lpfield">
+          <label>מחיר אמצע שבוע (ש"ח ללילה)</label>
+          <input type="text" name="price_weekday">
+        </div>
+        <div class="lpfield">
+          <label>מחיר סוף שבוע (ש"ח ללילה)</label>
+          <input type="text" name="price_weekend">
+        </div>
+      </div>
+
+      <div class="lpfield lpfull">
+        <label>תיאור הנכס *</label>
+        <textarea name="description" rows="4" required></textarea>
+      </div>
+
+      <div class="lpfield lpfull">
+        <label>מתקנים</label>
+        <div class="lpchips">
+          <label class="lpchk"><input type="checkbox" name="amenities" value="בריכה">בריכה</label>
+          <label class="lpchk"><input type="checkbox" name="amenities" value="בריכה מחוממת">בריכה מחוממת</label>
+          <label class="lpchk"><input type="checkbox" name="amenities" value="ג'קוזי">ג'קוזי</label>
+          <label class="lpchk"><input type="checkbox" name="amenities" value="כשר">כשר</label>
+          <label class="lpchk"><input type="checkbox" name="amenities" value="נוף לכנרת">נוף לכנרת</label>
+          <label class="lpchk"><input type="checkbox" name="amenities" value="יחידה פרטית">יחידה פרטית</label>
+          <label class="lpchk"><input type="checkbox" name="amenities" value="מתאים לילדים">מתאים לילדים</label>
+          <label class="lpchk"><input type="checkbox" name="amenities" value="ספא">ספא</label>
+          <label class="lpchk"><input type="checkbox" name="amenities" value="סאונה">סאונה</label>
+          <label class="lpchk"><input type="checkbox" name="amenities" value="ביליארד/פינג פונג">ביליארד/פינג פונג</label>
+        </div>
+      </div>
+
+      <div class="lpgrid">
+        <div class="lpfield">
+          <label>קישור לסרטון (יוטיוב / רילס)</label>
+          <input type="url" name="video_url_1" placeholder="https://...">
+        </div>
+        <div class="lpfield">
+          <label>קישור לסרטון נוסף</label>
+          <input type="url" name="video_url_2" placeholder="https://...">
+        </div>
+        <div class="lpfield">
+          <label>אינסטגרם</label>
+          <input type="url" name="instagram" placeholder="https://instagram.com/...">
+        </div>
+        <div class="lpfield">
+          <label>פייסבוק</label>
+          <input type="url" name="facebook" placeholder="https://facebook.com/...">
+        </div>
+        <div class="lpfield">
+          <label>טיקטוק</label>
+          <input type="url" name="tiktok" placeholder="https://tiktok.com/...">
+        </div>
+        <div class="lpfield">
+          <label>אתר אינטרנט</label>
+          <input type="url" name="website" placeholder="https://...">
+        </div>
+      </div>
+
+      <div class="lpfield lpfull">
+        <label>הערות נוספות</label>
+        <textarea name="notes" rows="3"></textarea>
+      </div>
+
+      <label class="lpchk lpconsent"><input type="checkbox" name="consent" required> קראתי ואני מסכים/ה ל<a href="#privacy" target="_blank">מדיניות הפרטיות</a> *</label>
+      <button type="submit" class="ago" id="lp-submit" style="margin-top:.5rem;">שליחת הפרטים</button>
+      <div class="lpmsg" id="lp-msg"></div>
+    </form>
+  </div>
+</section>
+
+<section id="privacy" class="legalsec">
+  <div class="legalcard">
+    <h2>מדיניות פרטיות</h2>
+    <p><strong>עדכון אחרון:</strong> אוגוסט 2026</p>
+    <p>אתר ZimmerAI ("האתר") מופעל על ידי עסק פטור עצמאי. מסמך זה מתאר כיצד אנו אוספים ומשתמשים במידע אישי.</p>
+    <p><strong>איזה מידע נאסף:</strong> בטופס רישום בעלי נכסים אנו אוספים שם איש קשר, טלפון, אימייל, ופרטי הנכס שמסרתם מרצונכם. אנו לא אוספים מידע אישי ממי שרק מחפש נכס באתר (השאלון לצד המחפש אינו שומר פרטים מזהים).</p>
+    <p><strong>למה משמש המידע:</strong> ליצירת קשר לגבי רישום הנכס באתר בלבד. המידע אינו נמכר או משותף עם צד שלישי למטרות שיווק.</p>
+    <p><strong>איפה נשמר המידע:</strong> הגשות הטופס נשמרות אצל ספק האחסון שלנו (Netlify) ואינן מועברות לגורם נוסף.</p>
+    <p><strong>זכויותיכם:</strong> ניתן לבקש בכל עת לעיין, לתקן או למחוק את המידע שנמסר, על ידי פנייה אלינו בפרטי הקשר המופיעים באתר.</p>
+    <p class="legalnote">מסמך זה הוא טיוטת בסיס ואינו תחליף לייעוץ משפטי. מומלץ להתאימו עם עורך/ת דין לפני הסתמכות מלאה עליו.</p>
+  </div>
+</section>
+
+<section id="terms" class="legalsec">
+  <div class="legalcard">
+    <h2>תנאי שימוש</h2>
+    <p>המידע על הנכסים המוצג באתר (מיקום, מחיר, זמינות ותיאור) נאסף ומוצג לנוחות המשתמש בלבד, וייתכנו בו אי-דיוקים או שינויים שטרם עודכנו. ZimmerAI אינה צד לעסקת ההזמנה בין המשתמש לבין בעל הנכס, ואינה אחראית לדיוק המידע, לזמינות בפועל, או לאיכות השירות המסופק על ידי הנכס. יש לוודא את כל הפרטים מול בעל הנכס או האתר המקורי לפני ביצוע הזמנה או תשלום.</p>
+    <p class="legalnote">מסמך זה הוא טיוטת בסיס ואינו תחליף לייעוץ משפטי.</p>
+  </div>
+</section>
+
+<footer class="ftr">
+  <a href="#list-property">בעל נכס? רישום בחינם</a>
+  <a href="#privacy">מדיניות פרטיות</a>
+  <a href="#terms">תנאי שימוש</a>
+</footer>
 
 <script>
 const PAGE_SZ = 24;
@@ -213,8 +375,7 @@ async function loadProps() {
   try {
     const r = await fetch('/props.json');
     ALL_PROPS = await r.json();
-    document.getElementById('st-count').textContent = ALL_PROPS.length.toLocaleString();
-    document.querySelector('.badge').textContent = ALL_PROPS.length.toLocaleString() + ' נכסים אמיתיים — כל ישראל';
+    document.querySelector('.badge').textContent = ALL_PROPS.length.toLocaleString() + ' נכסים אמיתיים — בצפון הארץ';
   } catch(e) {
     console.warn('Could not load props.json:', e);
   }
@@ -238,7 +399,56 @@ document.addEventListener('DOMContentLoaded', () => {
     c.onclick = () => { document.getElementById('main-ta').value = c.dataset.q; startChat(); };
   });
   setTimeout(() => document.getElementById('main-ta').focus(), 300);
+  initVoiceInput();
+  initLpForm();
 });
+
+// טופס רישום בעלי נכסים - נשלח ל-Netlify Forms (data-netlify="true" בטופס),
+// אין צורך בשום בקאנד/פאנקשן - נטליפיי שומר את ההגשות ומציג אותן בדשבורד + שולח התראת מייל.
+function initLpForm() {
+  const form = document.getElementById('lp-form');
+  const msg = document.getElementById('lp-msg');
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const data = new URLSearchParams(new FormData(form)).toString();
+    fetch('/', { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded'}, body: data })
+      .then(() => {
+        msg.textContent = 'תודה! הפרטים נשלחו בהצלחה, נחזור אליכם בקרוב.';
+        msg.className = 'lpmsg ok';
+        form.reset();
+      })
+      .catch(() => {
+        msg.textContent = 'משהו השתבש בשליחה. נסו שוב או צרו קשר ישירות.';
+        msg.className = 'lpmsg err';
+      });
+  });
+}
+
+// קלט קולי לבקשה הראשונה - מאפשר לדבר במקום להקליד. נתמך ב-Chrome/Edge/Safari,
+// לא נתמך בפיירפוקס - במקרה כזה הכפתור פשוט מוסתר במקום לשבור את הדף.
+function initVoiceInput() {
+  const btn = document.getElementById('mic-btn');
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { btn.style.display = 'none'; return; }
+  const rec = new SR();
+  rec.lang = 'he-IL';
+  rec.interimResults = false;
+  rec.maxAlternatives = 1;
+  let listening = false;
+  btn.onclick = () => {
+    if (listening) { rec.stop(); return; }
+    try { rec.start(); } catch (e) {}
+  };
+  rec.onstart = () => { listening = true; btn.classList.add('rec'); };
+  rec.onend = () => { listening = false; btn.classList.remove('rec'); };
+  rec.onerror = () => { listening = false; btn.classList.remove('rec'); };
+  rec.onresult = (e) => {
+    const text = e.results[0][0].transcript;
+    const ta = document.getElementById('main-ta');
+    ta.value = (ta.value.trim() ? ta.value.trim() + ' ' : '') + text;
+    ta.focus();
+  };
+}
 
 const DATES = [
   {l:'ראש השנה',v:'ראש השנה'},{l:'יום כיפור',v:'יום כיפור'},{l:'סוכות',v:'סוכות'},
@@ -733,6 +943,12 @@ function getEmoji(p) {
   return '&#127745;';
 }
 
+// מחלץ דומיין נקי מקישור הנכס, לתצוגת קרדיט "מקור: ..." על כל כרטיס
+function srcDomain(url) {
+  if (!url) return '';
+  try { return new URL(url).hostname.replace(/^www\./,''); } catch(e) { return ''; }
+}
+
 function renderCards(props) {
   const grid=document.getElementById('grid');
   if(dispPage===0) grid.innerHTML='';
@@ -743,17 +959,21 @@ function renderCards(props) {
       '<div class="price-row">'+(p.priceWeekend?'<span class="price-tag">סופ"ש: '+esc(p.priceWeekend)+'</span>':'')+(p.priceWeek?'<span class="price-tag">אמצ"ש: '+esc(p.priceWeek)+'</span>':'')+'</div>' : '';
     const amH = (p.tags||[]).filter(t=>['בריכה','גקוזי','ספא','כשר','וילה','קמפוס','סאונה'].includes(t))
       .map(t=>'<span class="am">'+t+'</span>').join('');
+    // תיאור מקוצר בפועל (לא רק ויזואלית ב-CSS) - כדי שלא יישב טקסט מלא ומועתק ב-HTML של הדף
+    const shortDesc = p.desc ? (p.desc.length > 120 ? p.desc.slice(0,120).trim()+'…' : p.desc) : '';
+    const srcDom = srcDomain(p.link);
     c.innerHTML='<div class="cph">'+getEmoji(p)+'</div>'
       +'<div class="cbody">'
       +'<div class="cloc">'+esc(p.area||'')+'</div>'
       +'<div class="ctit">'+esc(p.title||'')+'</div>'
-      +(p.desc?'<div class="cdesc">'+esc(p.desc)+'</div>':'')
+      +(shortDesc?'<div class="cdesc">'+esc(shortDesc)+'</div>':'')
+      +(srcDom?'<div class="csrc">מקור: '+esc(srcDom)+'</div>':'')
       +'<div class="mrow"><span>התאמה</span><div class="mtrack"><div class="mfill"></div></div><span class="mpct">'+p.match+'%</span></div>'
       +(p.why?'<div class="cwhy">'+esc(p.why)+'</div>':'')
       +priceH
       +(amH?'<div class="ams">'+amH+'</div>':'')
       +'<div class="cfoot">'
-      +(p.link?'<button class="ccta" onclick="window.open(\''+p.link+'\',\'_blank\')">פתח אתר</button>':'')
+      +(p.link?'<button class="ccta" onclick="window.open(\''+p.link+'\',\'_blank\')">לפרטים מלאים והזמנה</button>':'')
       +(p.phone?'<button class="ccta phone" onclick="window.open(\'tel:'+p.phone+'\')">'+esc(p.phone)+'</button>':'')
       +'</div></div>';
     grid.appendChild(c);
